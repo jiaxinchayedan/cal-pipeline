@@ -245,7 +245,6 @@ def verify_run(run_dir: str | Path) -> int:
                 if item.get("abs"):
                     candidates.append(Path(item["abs"]))
                 candidates.append(run_dir / label)
-                candidates.append(Path(label))
                 candidate = next((path for path in candidates if path.is_file()), None)
                 if candidate is None:
                     # 外部输入（如 data/raw）可能已随原始环境移动：跳过并告警，不误判为篡改

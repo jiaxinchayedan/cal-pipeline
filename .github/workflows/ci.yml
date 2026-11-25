@@ -88,7 +88,7 @@ jobs:
           set -euo pipefail
           python -m cal verify --run-dir runs/ci-run-1 | tee verify.txt
           grep -q "校验通过" verify.txt
-          echo "PASS 清单与 35 个登记文件哈希全部自洽（含清单自校验）"
+          echo "PASS 清单与全部登记文件哈希自洽（含清单自校验，计数见上一行）"
 
       - name: 验收标准 4 — 人为让 eval 失败时不生成报告
         run: |
