@@ -93,21 +93,22 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 ## 6. CI 证据（GitHub Actions 真实运行）
 
 - 仓库：<https://github.com/jiaxinchayedan/cal-pipeline>
-- 验收运行：**run #4**（commit `d08f30d`）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45616297448>
-- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **38 秒**（上限 15 分钟）
+- 最新验收运行：**run #8**（commit `705f959`）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45618706366>
+- 页面截图取自 run #4（commit `d08f30d`，步骤结构与判定逻辑与 run #8 相同）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45616297448>
+- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **55 秒**（上限 15 分钟）
 
 | 步骤 | 结论 | 耗时 |
 |---|---|---|
 | 检出代码 | ✅ | 1s |
-| 安装 Python 3.11 | ✅ | 0s |
-| 安装依赖（锁文件固定版本） | ✅ | 2s |
-| 运行 1（基线） | ✅ | 4s |
-| 运行 2（同配置复跑） | ✅ | 4s |
+| 安装 Python 3.11 | ✅ | 1s |
+| 安装依赖（锁文件固定版本） | ✅ | 1s |
+| 运行 1（基线） | ✅ | 7s |
+| 运行 2（同配置复跑） | ✅ | 6s |
 | 验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同 | ✅ | 0s |
-| 验收标准 2 — 关键指标与黄金值一致（差值 <1e-9） | ✅ | 0s |
-| 单元测试 | ✅ | 14s |
-| 验收标准 4 — eval 失败不生成报告 | ✅ | 0s |
-| 验收标准 3 — 断网容器内运行（`docker run --network none`） | ✅ | 10s |
+| 验收标准 2 — 关键指标与黄金值一致（差值 <1e-9） | ✅ | 1s |
+| 单元测试 | ✅ | 20s |
+| 验收标准 4 — eval 失败不生成报告 | ✅ | 1s |
+| 验收标准 3 — 断网容器内运行（`docker run --network none`） | ✅ | 13s |
 | 汇总 | ✅ | 0s |
 
 CI 日志原文摘录：
@@ -118,15 +119,15 @@ b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-2/
 PASS 两次运行 metrics.json SHA-256 完全一致：b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
 比对数值叶子 39 个，最大差值 0.000e+00（容差 1e-09）
 PASS 关键指标与黄金值完全一致
-run1_seconds=4
-run2_seconds=4
-14 passed in 13.21s
+run1_seconds=7
+run2_seconds=6
+20 passed in 20.47s
 PASS eval 失败后 report/ 目录不存在，失败步骤与日志路径已输出
 [cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
 PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）
 ```
 
-运行页面截图（真实页面，可直接对照上面的链接）：
+运行页面截图（真实页面，取自 run #4；run #8 的步骤与判定完全相同，数字见上表）：
 
 | 截图 | 内容 |
 |---|---|
