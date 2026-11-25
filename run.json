@@ -1,28 +1,28 @@
 {
-  "total_count": 1,
+  "total_count": 2,
   "workflow_runs": [
     {
-      "id": 45615500599,
+      "id": 45615977617,
       "name": "cal-pipeline",
-      "node_id": "WFR_kwLOV7k-xc8AAAAKnuVNNw",
+      "node_id": "WFR_kwLOV7k-xc8AAAAKnuyUkQ",
       "head_branch": "main",
-      "head_sha": "1075082bc104d596ec34eabb55d1b8f3ad2e766d",
+      "head_sha": "ed2c6ba14aea0a53abc4dac905ce7abe69e8ac8e",
       "path": ".github/workflows/ci.yml",
-      "display_title": "feat: 校准流水线一键运行（八步编排 + SHA-256 清单 + 离线容器 + 黄金值 CI）",
-      "run_number": 1,
+      "display_title": "fix: 配置哈希改为规范化文本哈希，修复 Windows/CI 行尾差异导致的黄金值比对失败",
+      "run_number": 2,
       "event": "push",
       "status": "completed",
       "conclusion": "failure",
       "workflow_id": 430310771,
-      "check_suite_id": 123422072128,
-      "check_suite_node_id": "CS_kwDOV7k-xc8AAAAcvIddQA",
-      "url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615500599",
-      "html_url": "https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45615500599",
+      "check_suite_id": 123423353347,
+      "check_suite_node_id": "CS_kwDOV7k-xc8AAAAcvJrqAw",
+      "url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617",
+      "html_url": "https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45615977617",
       "pull_requests": [
 
       ],
-      "created_at": "2026-11-25T12:37:14Z",
-      "updated_at": "2026-11-25T12:37:42Z",
+      "created_at": "2026-11-25T12:40:12Z",
+      "updated_at": "2026-11-25T12:40:58Z",
       "actor": {
         "login": "jiaxinchayedan",
         "id": 28600852,
@@ -48,7 +48,7 @@
       "referenced_workflows": [
 
       ],
-      "run_started_at": "2026-11-25T12:37:14Z",
+      "run_started_at": "2026-11-25T12:40:12Z",
       "triggering_actor": {
         "login": "jiaxinchayedan",
         "id": 28600852,
@@ -70,19 +70,19 @@
         "user_view_type": "public",
         "site_admin": false
       },
-      "jobs_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615500599/jobs",
-      "logs_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615500599/logs",
-      "check_suite_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/check-suites/123422072128",
-      "artifacts_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615500599/artifacts",
-      "cancel_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615500599/cancel",
-      "rerun_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615500599/rerun",
+      "jobs_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617/jobs",
+      "logs_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617/logs",
+      "check_suite_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/check-suites/123423353347",
+      "artifacts_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617/artifacts",
+      "cancel_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617/cancel",
+      "rerun_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617/rerun",
       "previous_attempt_url": null,
       "workflow_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/workflows/430310771",
       "head_commit": {
-        "id": "1075082bc104d596ec34eabb55d1b8f3ad2e766d",
-        "tree_id": "fb81f7a55084e679ad4a25d0efa4c0d052544822",
-        "message": "feat: 校准流水线一键运行（八步编排 + SHA-256 清单 + 离线容器 + 黄金值 CI）",
-        "timestamp": "2026-11-25T12:36:54Z",
+        "id": "ed2c6ba14aea0a53abc4dac905ce7abe69e8ac8e",
+        "tree_id": "27ca4fc0d286a5b714140d8c5cbad6f0c6a0d43e",
+        "message": "fix: 配置哈希改为规范化文本哈希，修复 Windows/CI 行尾差异导致的黄金值比对失败",
+        "timestamp": "2026-11-25T12:40:08Z",
         "author": {
           "name": "jiaxinchayedan",
           "email": "jiaxinchayedan@users.noreply.github.com"

@@ -1,0 +1,153 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 139211351520,
+      "run_id": 45615977617,
+      "workflow_name": "cal-pipeline",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/runs/45615977617",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOV7k-xc8AAAAgaaSl4A",
+      "head_sha": "ed2c6ba14aea0a53abc4dac905ce7abe69e8ac8e",
+      "url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/actions/jobs/139211351520",
+      "html_url": "https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45615977617/job/139211351520",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-25T12:40:13Z",
+      "started_at": "2026-11-25T12:40:16Z",
+      "completed_at": "2026-11-25T12:40:58Z",
+      "name": "八步流水线 / 可复现 / 离线容器",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-25T12:40:16Z",
+          "completed_at": "2026-11-25T12:40:17Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-25T12:40:17Z",
+          "completed_at": "2026-11-25T12:40:17Z"
+        },
+        {
+          "name": "安装 Python 3.11",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-25T12:40:17Z",
+          "completed_at": "2026-11-25T12:40:18Z"
+        },
+        {
+          "name": "安装依赖（锁文件固定版本）",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-25T12:40:18Z",
+          "completed_at": "2026-11-25T12:40:19Z"
+        },
+        {
+          "name": "运行 1（基线，记录耗时）",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-25T12:40:19Z",
+          "completed_at": "2026-11-25T12:40:26Z"
+        },
+        {
+          "name": "运行 2（同配置复跑，记录耗时）",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-25T12:40:26Z",
+          "completed_at": "2026-11-25T12:40:32Z"
+        },
+        {
+          "name": "验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-25T12:40:32Z",
+          "completed_at": "2026-11-25T12:40:32Z"
+        },
+        {
+          "name": "验收标准 2 — 关键指标与黄金值一致（差值 <1e-9）",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-25T12:40:32Z",
+          "completed_at": "2026-11-25T12:40:32Z"
+        },
+        {
+          "name": "单元测试（配置 / 模型 / 清单 / 确定性 / 失败语义）",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-25T12:40:32Z",
+          "completed_at": "2026-11-25T12:40:50Z"
+        },
+        {
+          "name": "验收标准 4 — 人为让 eval 失败时不生成报告",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-25T12:40:50Z",
+          "completed_at": "2026-11-25T12:40:51Z"
+        },
+        {
+          "name": "验收标准 3 — 断网容器内运行（docker run --network none）",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-11-25T12:40:51Z",
+          "completed_at": "2026-11-25T12:40:56Z"
+        },
+        {
+          "name": "汇总",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-25T12:40:56Z",
+          "completed_at": "2026-11-25T12:40:56Z"
+        },
+        {
+          "name": "Post 安装 Python 3.11",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23,
+          "started_at": "2026-11-25T12:40:56Z",
+          "completed_at": "2026-11-25T12:40:56Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-11-25T12:40:56Z",
+          "completed_at": "2026-11-25T12:40:57Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-11-25T12:40:57Z",
+          "completed_at": "2026-11-25T12:40:57Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/jiaxinchayedan/cal-pipeline/check-runs/139211351520",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000000001,
+      "runner_name": "GitHub Actions 1000000001",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

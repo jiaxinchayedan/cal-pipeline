@@ -1,0 +1,6 @@
+128: 2026-11-25T12:40:18.1580290Z pip cache is not found
+235: 2026-11-25T12:40:32.0632941Z [36;1m  echo "::error::两次运行指标 JSON 哈希不一致：$a != $b"[0m
+310: 2026-11-25T12:40:51.5097804Z 2026-11-25 12:40:51,509 ERROR 步骤 eval 失败，流水线中止：
+387: 2026-11-25T12:40:56.1046458Z #9 1.354 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment ins
+421: 2026-11-25T12:40:56.9132651Z ModuleNotFoundError: No module named 'cal'
+422: 2026-11-25T12:40:56.9520452Z ##[error]Process completed with exit code 1.
