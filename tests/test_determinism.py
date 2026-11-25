@@ -58,6 +58,10 @@ def test_manifest_records_sha256_for_every_step(tmp_path: Path) -> None:
     run_dir = runs_dir / "manifest-1"
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
 
+    # 清单不应记录绝对路径（否则换目录运行清单就不一致）
+    assert manifest["config"] == "cal.yaml"
+    assert "config_path" not in manifest
+
     steps = [entry["step"] for entry in manifest["steps"]]
     assert steps == [
         "prepare",

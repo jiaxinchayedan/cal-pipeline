@@ -128,7 +128,8 @@ def run_pipeline(
     manifest = {
         "schema_version": "1.0",
         "run_id": rid,
-        "config_path": str(config_path).replace("\\", "/"),
+        # 只记文件名，不记绝对路径：清单不应随运行位置（cwd）变化
+        "config": config_path.name,
         "config_sha256": config_sha,
         "steps": [],
     }

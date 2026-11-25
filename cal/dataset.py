@@ -8,6 +8,7 @@
 """
 from __future__ import annotations
 
+import json
 import math
 import random
 import re
@@ -128,7 +129,7 @@ def _mask_obj(obj):
         return {key: _mask_obj(value) for key, value in obj.items()}
     if isinstance(obj, list):
         return [_mask_obj(item) for item in obj]
-    return _mask(value)
+    return _mask(obj)
 
 
 def extract(cfg: dict, run_dir: Path) -> Tuple[List[dict], List[dict], List[dict]]:
@@ -136,7 +137,7 @@ def extract(cfg: dict, run_dir: Path) -> Tuple[List[dict], List[dict], List[dict
     raw_dir = Path(cfg["data"]["raw_dir"])
     if not raw_dir.is_absolute():
         raw_dir = Path.cwd() / raw_dir
-    required = {"companies.jsonl": (None,), "demand_cards.jsonl": (None,), "outcomes.jsonl": (None,)}
+    required = ("companies.jsonl", "demand_cards.jsonl", "outcomes.jsonl")
     missing = [name for name in required if not (raw_dir / name).is_file()]
     if missing:
         raise FileNotFoundError(f"extract 模式缺少原始表：{missing}（目录 {raw_dir}）")
@@ -147,7 +148,7 @@ def extract(cfg: dict, run_dir: Path) -> Tuple[List[dict], List[dict], List[dict
             for line in fh:
                 line = line.strip()
                 if line:
-                    rows.append(_mask_obj(__import__("json").loads(line)))
+                    rows.append(_mask_obj(json.loads(line)))
         return rows
 
     return load("companies.jsonl"), load("demand_cards.jsonl"), load("outcomes.jsonl")

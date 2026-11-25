@@ -39,6 +39,7 @@ cal-pipeline/
 │   └── steps/            # 八个独立步骤模块
 ├── bin/cal               # 容器内 cal 命令入口
 ├── cal.yaml              # 配置样例（seed / 数据规模 / 权重 / 阈值 / 搜索网格）
+├── data/raw/             # extract 模式样例原始表（3 家企业 / 2 张需求卡，含虚构联系方式用于验证脱敏）
 ├── Dockerfile            # 两阶段构建，运行期离线
 ├── requirements.txt      # 运行期依赖（PyYAML）
 ├── requirements.lock     # 完整锁文件（含 pytest 等测试依赖）
@@ -57,6 +58,7 @@ python -m pip install -r requirements.lock
 python -m cal run --config cal.yaml            # 默认 run_id = UTC 时间戳 + 配置哈希
 python -m cal run --config cal.yaml --run-id demo-1
 python -m cal steps                            # 查看八步顺序
+python -m cal run --config cal.yaml --fail-step eval   # 故障注入（验证失败语义）
 ```
 
 ### Docker（运行期不需要外网）
@@ -76,7 +78,8 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 4. **产物不含易变信息**：`metrics.json` 不写时间戳、不写 run_id，所以两次运行能逐字节一致。
 5. **依赖锁版本**：`requirements.lock` 固定 PyYAML 6.0.2 / pytest 8.3.4 等版本，CI 与本机一致（Python 3.11）。
 6. **运行目录隔离**：默认 `run_id` 带 UTC 时间戳；同一 run_id 目录已存在时拒绝运行，避免复用半成品目录。
-7. **哈希清单**：`manifest.json` 记录每步输入/输出的 SHA-256 与字节数，任何一步产物变化都能定位。
+7. **清单不含绝对路径**：`manifest.json` 只记录配置文件名与哈希，换目录运行清单结构不变。
+8. **哈希清单**：`manifest.json` 记录每步输入/输出的 SHA-256 与字节数，任何一步产物变化都能定位。
 
 ## 5. 验收标准对照
 
@@ -138,7 +141,7 @@ PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal
 ```
 $ python -m pytest -q
 ..............                                                           [100%]
-14 passed in 43.37s
+20 passed in 30.22s
 ```
 
 两次完整运行、哈希一致：
@@ -195,6 +198,14 @@ ablation  eval  logs  prepare  profile  replay        # 无 report 目录
 | `scan_thresholds` | 阈值扫描区间与步长、目标指标 |
 | `search.grid` | 权重网格搜索范围 |
 | `ablation.features` | 参与消融的特征 |
+
+### 9.1 extract（脱敏抽取）模式
+
+```bash
+python -m cal run --config cal.yaml   # cal.yaml 中 data.source 改成 extract
+```
+
+读取 `data/raw/` 下 `companies.jsonl`、`demand_cards.jsonl`、`outcomes.jsonl`，对手机号、邮箱、18 位身份证号做正则掩码（`1**********`、`***@masked.invalid`）后再进入后续步骤。仓库自带 3 家企业 / 2 张需求卡的样例原始表，`tests/test_extract.py` 断言产物中不出现任何原始联系方式。
 
 ## 10. 边界与已知限制
 

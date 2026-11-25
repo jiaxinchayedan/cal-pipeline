@@ -1,0 +1,2 @@
+{"budget_cents": 10000, "company_scale": 120, "id": "S1", "industry": "智能制造", "needed_resources": ["仓储"], "note": "请电话 13900139000 或邮件 demand1@example.com 联系", "region": "思明区", "urgency": "normal"}
+{"budget_cents": 10500, "company_scale": 500, "id": "S2", "industry": "跨境电商", "needed_resources": ["冷链", "展厅"], "note": "请电话 13900139001 或邮件 demand2@example.com 联系", "region": "湖里区", "urgency": "normal"}

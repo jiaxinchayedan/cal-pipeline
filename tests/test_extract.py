@@ -1,0 +1,82 @@
+"""extract（脱敏抽取）模式：样例数据 + 端到端可用性 + 脱敏断言。"""
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+RAW = ROOT / "data" / "raw"
+
+
+def _config(tmp_path: Path, raw_dir: str) -> Path:
+    config = tmp_path / "extract.yaml"
+    config.write_text(
+        "seed: 42\n"
+        "data:\n"
+        "  source: extract\n"
+        f"  raw_dir: {raw_dir}\n"
+        "  companies: 3\n"
+        "  months: 3\n"
+        "  demand_cards: 2\n",
+        encoding="utf-8",
+    )
+    return config
+
+
+def _run(config: Path, runs_dir: Path, run_id: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "cal",
+            "run",
+            "--config",
+            str(config),
+            "--runs-dir",
+            str(runs_dir),
+            "--run-id",
+            run_id,
+        ],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=600,
+    )
+
+
+def test_extract_mode_completes_and_masks_contacts(tmp_path: Path) -> None:
+    assert RAW.is_dir(), "缺少 data/raw 样例数据"
+    config = _config(tmp_path, RAW.as_posix())
+    runs = tmp_path / "runs"
+
+    result = _run(config, runs, "ex-1")
+    assert result.returncode == 0, result.stderr + result.stdout
+
+    companies = (runs / "ex-1" / "prepare" / "companies.jsonl").read_text(encoding="utf-8")
+    cards = (runs / "ex-1" / "prepare" / "demand_cards.jsonl").read_text(encoding="utf-8")
+
+    # 原始手机号 / 邮箱不得出现在产物中
+    for raw_value in ("13800138001", "13800138002", "user1@example.com", "user2@example.com"):
+        assert raw_value not in companies
+    for raw_value in ("13900139000", "13900139001", "demand1@example.com"):
+        assert raw_value not in cards
+
+    # 掩码确实生效
+    assert "1**********" in companies
+    assert "***@masked.invalid" in companies
+
+    # 流水线照常产出报告
+    assert (runs / "ex-1" / "report" / "metrics.json").is_file()
+    assert (runs / "ex-1" / "manifest.json").is_file()
+
+
+def test_extract_mode_reports_missing_raw_tables(tmp_path: Path) -> None:
+    config = _config(tmp_path, (tmp_path / "no_such_dir").as_posix())
+    result = _run(config, tmp_path / "runs", "ex-2")
+
+    assert result.returncode == 2
+    combined = (result.stderr + result.stdout).replace("\\", "/")
+    assert "缺少原始表" in combined
+    assert not (tmp_path / "runs" / "ex-2" / "report").exists()
