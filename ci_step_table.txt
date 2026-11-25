@@ -1,0 +1,15 @@
+job_id=139212445206 conclusion=success
+检出代码 | success | 1.0s
+安装 Python 3.11 | success | 0.0s
+安装依赖（锁文件固定版本） | success | 2.0s
+运行 1（基线，记录耗时） | success | 4.0s
+运行 2（同配置复跑，记录耗时） | success | 4.0s
+验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同 | success | 0.0s
+验收标准 2 — 关键指标与黄金值一致（差值 <1e-9） | success | 0.0s
+单元测试（配置 / 模型 / 清单 / 确定性 / 失败语义） | success | 14.0s
+验收标准 4 — 人为让 eval 失败时不生成报告 | success | 0.0s
+验收标准 3 — 断网容器内运行（docker run --network none） | success | 10.0s
+汇总 | success | 0.0s
+Post 安装 Python 3.11 | success | 0.0s
+Post 检出代码 | success | 0.0s
+TOTAL | 38.0s

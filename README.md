@@ -82,12 +82,56 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 
 | # | 验收标准原文 | 对应实现 | 证据位置 |
 |---|---|---|---|
-| 1 | 同一配置运行两次，指标 JSON 的 SHA-256 相同（CI 日志截图） | CI 中 `ci-run-1`、`ci-run-2` 两次运行后 `sha256sum` 比对 | CI 步骤「验收标准 1」 |
-| 2 | CI 中完整流水线 ≤15 分钟，关键指标与黄金值一致（CI 日志截图） | `scripts/check_golden.py` 逐数值叶子比对，容差 1e-9；单次流水线约 10 秒 | CI 步骤「验收标准 2」 |
-| 3 | 断网环境下容器内运行成功（运行日志截图） | `docker run --network none` 跑完整八步 | CI 步骤「验收标准 3」 |
+| 1 | 同一配置运行两次，指标 JSON 的 SHA-256 相同（CI 日志截图） | CI 中 `ci-run-1`、`ci-run-2` 两次运行后 `sha256sum` 比对 | CI 步骤「验收标准 1」+ `docs/ci-run4-search-pass.png` |
+| 2 | CI 中完整流水线 ≤15 分钟，关键指标与黄金值一致（CI 日志截图） | `scripts/check_golden.py` 逐数值叶子比对，容差 1e-9；单次流水线约 10 秒 | CI 步骤「验收标准 2」+ `docs/ci-run4-offline.png` |
+| 3 | 断网环境下容器内运行成功（运行日志截图） | `docker run --network none` 跑完整八步 | CI 步骤「验收标准 3」+ `docs/ci-run4-offline.png` |
 | 4 | 人为让 eval 步骤失败时不生成报告文件（测试通过） | `--fail-step eval` 故障注入；`tests/test_failure_semantics.py` | CI 步骤「验收标准 4」+ pytest |
 
-## 6. 测试结果（本机真实输出）
+## 6. CI 证据（GitHub Actions 真实运行）
+
+- 仓库：<https://github.com/jiaxinchayedan/cal-pipeline>
+- 验收运行：**run #4**（commit `d08f30d`）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45616297448>
+- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **38 秒**（上限 15 分钟）
+
+| 步骤 | 结论 | 耗时 |
+|---|---|---|
+| 检出代码 | ✅ | 1s |
+| 安装 Python 3.11 | ✅ | 0s |
+| 安装依赖（锁文件固定版本） | ✅ | 2s |
+| 运行 1（基线） | ✅ | 4s |
+| 运行 2（同配置复跑） | ✅ | 4s |
+| 验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同 | ✅ | 0s |
+| 验收标准 2 — 关键指标与黄金值一致（差值 <1e-9） | ✅ | 0s |
+| 单元测试 | ✅ | 14s |
+| 验收标准 4 — eval 失败不生成报告 | ✅ | 0s |
+| 验收标准 3 — 断网容器内运行（`docker run --network none`） | ✅ | 10s |
+| 汇总 | ✅ | 0s |
+
+CI 日志原文摘录：
+
+```text
+b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-1/report/metrics.json
+b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-2/report/metrics.json
+PASS 两次运行 metrics.json SHA-256 完全一致：b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
+比对数值叶子 39 个，最大差值 0.000e+00（容差 1e-09）
+PASS 关键指标与黄金值完全一致
+run1_seconds=4
+run2_seconds=4
+14 passed in 13.21s
+PASS eval 失败后 report/ 目录不存在，失败步骤与日志路径已输出
+[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
+PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）
+```
+
+运行页面截图（真实页面，可直接对照上面的链接）：
+
+| 截图 | 内容 |
+|---|---|
+| `docs/ci-run4-steps.png` | 11 个步骤全部绿色通过 + 各步耗时 + 作业总时长 38s |
+| `docs/ci-run4-search-pass.png` | 日志搜索 `PASS`：两次运行 SHA-256 完全相同 |
+| `docs/ci-run4-offline.png` | 黄金值比对 39 个数值叶子差值 0 + `docker run --network none` 断网运行 |
+
+## 7. 测试结果（本机真实输出）
 
 环境：Windows 11 / Python 3.13.14 / PyYAML 6.0.3 / pytest 8.4.2。
 
@@ -128,7 +172,7 @@ $ ls runs/demo-fail
 ablation  eval  logs  prepare  profile  replay        # 无 report 目录
 ```
 
-## 7. 关键指标（当前配置）
+## 8. 关键指标（当前配置）
 
 | 指标 | 值 |
 |---|---|
@@ -139,7 +183,7 @@ ablation  eval  logs  prepare  profile  replay        # 无 report 目录
 | 权重搜索最优 AUC | 0.6681（27 组组合） |
 | 最重要特征 | `resource_overlap`（去掉后 AUC −0.0621） |
 
-## 8. 配置项
+## 9. 配置项
 
 | 键 | 含义 |
 |---|---|
@@ -152,7 +196,7 @@ ablation  eval  logs  prepare  profile  replay        # 无 report 目录
 | `search.grid` | 权重网格搜索范围 |
 | `ablation.features` | 参与消融的特征 |
 
-## 9. 边界与已知限制
+## 10. 边界与已知限制
 
 - **不是算法调优**：流水线封装的是"可复现地跑一遍校准流程"，各步骤内部的模型逻辑保持确定性最小实现，不追求 SOTA 指标。
 - **跨机器浮点**：本流水线只承诺同一环境（同一 Python 小版本、同一依赖版本）下逐字节一致；跨架构（如 x86 / ARM）不保证最后一位浮点一致，CI 与本机均为 CPython 3.11/3.13 的 x86_64 环境。
