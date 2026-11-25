@@ -110,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           docker build -t cal-pipeline:ci .
-          docker run --rm --network none cal-pipeline:ci run --config cal.yaml --run-id offline
+          docker run --rm --network none cal-pipeline:ci run --config cal.yaml --run-id offline | tee offline.log
           echo "PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）"
 
       - name: 整作业耗时断言（≤15 分钟）
@@ -131,5 +131,6 @@ jobs:
             echo '```'
             cat determinism.txt run1.time run2.time 2>/dev/null || true
             cat verify.txt 2>/dev/null || true
+            grep -F "[cal] 流水线完成 | run_id=offline" offline.log 2>/dev/null || true
             echo '```'
           } >> $GITHUB_STEP_SUMMARY
