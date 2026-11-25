@@ -79,10 +79,12 @@ def test_extract_mode_completes_and_masks_contacts(tmp_path: Path) -> None:
     prepare = manifest["steps"][0]
     assert prepare["step"] == "prepare"
     assert [item["path"] for item in prepare["inputs"]] == [
-        "data/raw/companies.jsonl",
-        "data/raw/demand_cards.jsonl",
-        "data/raw/outcomes.jsonl",
+        "prepare/raw/companies.jsonl",
+        "prepare/raw/demand_cards.jsonl",
+        "prepare/raw/outcomes.jsonl",
     ]
+    for item in prepare["inputs"]:
+        assert "abs" not in item
     for item in prepare["inputs"]:
         assert len(item["sha256"]) == 64
         assert item["bytes"] > 0
@@ -111,6 +113,8 @@ def test_extract_mode_completes_and_masks_contacts(tmp_path: Path) -> None:
     )
     assert verified_elsewhere.returncode == 0, verified_elsewhere.stderr
     assert "未定位" not in verified_elsewhere.stderr
+    # 原始表以快照形式留在运行目录，运行自包含
+    assert (runs / "ex-1" / "prepare" / "raw" / "companies.jsonl").is_file()
 
 
 def test_extract_mode_reports_missing_raw_tables(tmp_path: Path) -> None:

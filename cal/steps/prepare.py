@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 
 from .. import dataset, hashing
 
@@ -16,12 +17,14 @@ def run(ctx) -> dict:
         companies, cards, outcomes = dataset.generate(ctx.cfg, ctx.seed)
     else:
         companies, cards, outcomes = dataset.extract(ctx.cfg, ctx.run_dir)
-        # 记录流水线外部输入的 SHA-256（extract 模式下真正决定结果的是这三张原始表）
+        # 把原始表快照进运行目录：运行自包含、可异地回验，不依赖绝对路径
         raw_dir = dataset.resolve_raw_dir(ctx.cfg)
-        inputs = [
-            {"path": f"data/raw/{name}", "abs": (raw_dir / name).as_posix()}
-            for name in dataset.RAW_TABLES
-        ]
+        snap_dir = out / "raw"
+        snap_dir.mkdir(parents=True, exist_ok=True)
+        inputs = []
+        for name in dataset.RAW_TABLES:
+            shutil.copyfile(raw_dir / name, snap_dir / name)
+            inputs.append(f"prepare/raw/{name}")
 
     files = []
     for name, rows in (

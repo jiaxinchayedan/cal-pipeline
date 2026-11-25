@@ -47,6 +47,12 @@ def test_verify_passes_on_clean_run_and_detects_tampering(tmp_path: Path) -> Non
     assert manifest_tampered.returncode == 1
     assert "清单自身被改动" in manifest_tampered.stderr
 
+    # 删除自校验文件 → 必须判失败（不能被「删掉一行」绕过）
+    (run_dir / "manifest.sha256").unlink()
+    no_stamp = _run("verify", "--run-dir", str(run_dir))
+    assert no_stamp.returncode == 1
+    assert "缺少清单自校验文件" in no_stamp.stderr
+
 
 def test_verify_reports_missing_run_dir(tmp_path: Path) -> None:
     result = _run("verify", "--run-dir", str(tmp_path / "nope"))

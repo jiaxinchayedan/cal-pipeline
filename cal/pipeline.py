@@ -226,12 +226,14 @@ def verify_run(run_dir: str | Path) -> int:
 
     ok = True
     stamp_path = run_dir / "manifest.sha256"
-    if stamp_path.is_file():
-        recorded = stamp_path.read_text(encoding="utf-8").strip()
-        actual = hashing.sha256_file(manifest_path)
-        if recorded != actual:
-            print(f"[cal] 清单自身被改动：记录 {recorded[:16]}… 实际 {actual[:16]}…", file=sys.stderr)
-            ok = False
+    if not stamp_path.is_file():
+        print("[cal] 校验失败：缺少清单自校验文件 manifest.sha256（无法证明清单未被改动）", file=sys.stderr)
+        return 1
+    recorded = stamp_path.read_text(encoding="utf-8").strip()
+    actual = hashing.sha256_file(manifest_path)
+    if recorded != actual:
+        print(f"[cal] 清单自身被改动：记录 {recorded[:16]}… 实际 {actual[:16]}…", file=sys.stderr)
+        ok = False
 
     manifest = hashing.read_json(manifest_path)
     checked = failed = skipped = 0
