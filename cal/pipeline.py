@@ -112,7 +112,7 @@ def run_pipeline(
 ) -> int:
     config_path = Path(config_path)
     cfg = load_config(config_path)
-    config_sha = hashing.sha256_file(config_path)
+    config_sha = hashing.sha256_text_normalized(config_path)
 
     rid = run_id or default_run_id(config_sha)
     run_dir = Path(runs_dir) / rid

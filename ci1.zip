@@ -1,0 +1,303 @@
+﻿2026-11-25T12:37:19.3101150Z Current runner version: '2.338.2'
+2026-11-25T12:37:19.3124825Z ##[group]Runner Image Provisioner
+2026-11-25T12:37:19.3125808Z Hosted Compute Agent
+2026-11-25T12:37:19.3126394Z Version: 20261111.635
+2026-11-25T12:37:19.3127007Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-25T12:37:19.3127671Z Build Date: 2026-11-11T01:49:01Z
+2026-11-25T12:37:19.3128312Z Worker ID: {23d123c1-c216-472e-a26a-a5fb7e38307c}
+2026-11-25T12:37:19.3129092Z Region: westus3
+2026-11-25T12:37:19.3129576Z Cloud: Azure
+2026-11-25T12:37:19.3130122Z ##[endgroup]
+2026-11-25T12:37:19.3131551Z ##[group]Operating System
+2026-11-25T12:37:19.3132147Z Ubuntu
+2026-11-25T12:37:19.3132661Z 26.04.1
+2026-11-25T12:37:19.3133114Z LTS
+2026-11-25T12:37:19.3133648Z ##[endgroup]
+2026-11-25T12:37:19.3134144Z ##[group]Runner Image
+2026-11-25T12:37:19.3134705Z Image: ubuntu-26.04
+2026-11-25T12:37:19.3135230Z Version: 20261116.202.1
+2026-11-25T12:37:19.3137211Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-25T12:37:19.3138617Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-25T12:37:19.3139490Z ##[endgroup]
+2026-11-25T12:37:19.3140550Z ##[group]GITHUB_TOKEN Permissions
+2026-11-25T12:37:19.3142601Z Contents: read
+2026-11-25T12:37:19.3143147Z Metadata: read
+2026-11-25T12:37:19.3143631Z Packages: read
+2026-11-25T12:37:19.3144168Z ##[endgroup]
+2026-11-25T12:37:19.3146596Z Secret source: Actions
+2026-11-25T12:37:19.3147568Z Cache mode: write
+2026-11-25T12:37:19.3148205Z Prepare workflow directory
+2026-11-25T12:37:19.3534228Z Prepare all required actions
+2026-11-25T12:37:19.3585239Z Getting action download info
+2026-11-25T12:37:19.6928263Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-25T12:37:19.7810307Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-25T12:37:19.9143442Z Complete job name: 八步流水线 / 可复现 / 离线容器
+2026-11-25T12:37:20.0056346Z ##[group]Run actions/checkout@v4
+2026-11-25T12:37:20.0057519Z with:
+2026-11-25T12:37:20.0057965Z   repository: jiaxinchayedan/cal-pipeline
+2026-11-25T12:37:20.0061532Z   token: ***
+2026-11-25T12:37:20.0061907Z   ssh-strict: true
+2026-11-25T12:37:20.0062293Z   ssh-user: git
+2026-11-25T12:37:20.0062677Z   persist-credentials: true
+2026-11-25T12:37:20.0063097Z   clean: true
+2026-11-25T12:37:20.0063509Z   sparse-checkout-cone-mode: true
+2026-11-25T12:37:20.0063970Z   fetch-depth: 1
+2026-11-25T12:37:20.0064344Z   fetch-tags: false
+2026-11-25T12:37:20.0064766Z   show-progress: true
+2026-11-25T12:37:20.0065162Z   lfs: false
+2026-11-25T12:37:20.0065679Z   submodules: false
+2026-11-25T12:37:20.0066083Z   set-safe-directory: true
+2026-11-25T12:37:20.0066569Z   allow-unsafe-pr-checkout: false
+2026-11-25T12:37:20.0067664Z env:
+2026-11-25T12:37:20.0068024Z   TZ: UTC
+2026-11-25T12:37:20.0068373Z ##[endgroup]
+2026-11-25T12:37:20.2431336Z Syncing repository: jiaxinchayedan/cal-pipeline
+2026-11-25T12:37:20.2433794Z ##[group]Getting Git version info
+2026-11-25T12:37:20.2434602Z Working directory is '/home/runner/work/cal-pipeline/cal-pipeline'
+2026-11-25T12:37:20.2436482Z [command]/usr/bin/git version
+2026-11-25T12:37:20.2443194Z git version 2.56.1
+2026-11-25T12:37:20.2463016Z ##[endgroup]
+2026-11-25T12:37:20.2476779Z Temporarily overriding HOME='/home/runner/work/_temp/618b77da-27ae-498a-a6fa-37b749e5e760' before making global git config changes
+2026-11-25T12:37:20.2479184Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-25T12:37:20.2481280Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cal-pipeline/cal-pipeline
+2026-11-25T12:37:20.2540472Z Deleting the contents of '/home/runner/work/cal-pipeline/cal-pipeline'
+2026-11-25T12:37:20.2543553Z ##[group]Initializing the repository
+2026-11-25T12:37:20.2548382Z [command]/usr/bin/git init /home/runner/work/cal-pipeline/cal-pipeline
+2026-11-25T12:37:20.2647454Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-25T12:37:20.2650899Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-25T12:37:20.2653112Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-25T12:37:20.2654625Z hint: call:
+2026-11-25T12:37:20.2655453Z hint:
+2026-11-25T12:37:20.2656634Z hint: 	git config --global init.defaultBranch <name>
+2026-11-25T12:37:20.2657783Z hint:
+2026-11-25T12:37:20.2658894Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-25T12:37:20.2660585Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-25T12:37:20.2661969Z hint:
+2026-11-25T12:37:20.2662823Z hint: 	git branch -m <name>
+2026-11-25T12:37:20.2663770Z hint:
+2026-11-25T12:37:20.2665037Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-25T12:37:20.2667272Z Initialized empty Git repository in /home/runner/work/cal-pipeline/cal-pipeline/.git/
+2026-11-25T12:37:20.2670185Z [command]/usr/bin/git remote add origin https://github.com/jiaxinchayedan/cal-pipeline
+2026-11-25T12:37:20.2713463Z ##[endgroup]
+2026-11-25T12:37:20.2714798Z ##[group]Disabling automatic garbage collection
+2026-11-25T12:37:20.2718326Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-25T12:37:20.2747261Z ##[endgroup]
+2026-11-25T12:37:20.2748474Z ##[group]Setting up auth
+2026-11-25T12:37:20.2754380Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-25T12:37:20.2789883Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-25T12:37:20.3194005Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-25T12:37:20.3227505Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-25T12:37:20.3475240Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-25T12:37:20.3500088Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-25T12:37:20.3727775Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-25T12:37:20.3767392Z ##[endgroup]
+2026-11-25T12:37:20.3768114Z ##[group]Fetching the repository
+2026-11-25T12:37:20.3779570Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1075082bc104d596ec34eabb55d1b8f3ad2e766d:refs/remotes/origin/main
+2026-11-25T12:37:20.8208569Z From https://github.com/jiaxinchayedan/cal-pipeline
+2026-11-25T12:37:20.8210506Z  * [new ref]         1075082bc104d596ec34eabb55d1b8f3ad2e766d -> origin/main
+2026-11-25T12:37:20.8214810Z ##[endgroup]
+2026-11-25T12:37:20.8216722Z ##[group]Determining the checkout info
+2026-11-25T12:37:20.8218471Z ##[endgroup]
+2026-11-25T12:37:20.8219922Z [command]/usr/bin/git sparse-checkout disable
+2026-11-25T12:37:20.8267767Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-25T12:37:20.8295118Z ##[group]Checking out the ref
+2026-11-25T12:37:20.8298753Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-25T12:37:20.8377730Z Switched to a new branch 'main'
+2026-11-25T12:37:20.8384213Z branch 'main' set up to track 'origin/main'.
+2026-11-25T12:37:20.8398540Z ##[endgroup]
+2026-11-25T12:37:20.8436713Z [command]/usr/bin/git log -1 --format=%H
+2026-11-25T12:37:20.8457747Z 1075082bc104d596ec34eabb55d1b8f3ad2e766d
+2026-11-25T12:37:20.8773085Z ##[group]Run actions/setup-python@v5
+2026-11-25T12:37:20.8773843Z with:
+2026-11-25T12:37:20.8774272Z   python-version: 3.11
+2026-11-25T12:37:20.8774795Z   cache: pip
+2026-11-25T12:37:20.8775239Z   check-latest: false
+2026-11-25T12:37:20.8783953Z   token: ***
+2026-11-25T12:37:20.8784433Z   update-environment: true
+2026-11-25T12:37:20.8785033Z   allow-prereleases: false
+2026-11-25T12:37:20.8785690Z   freethreaded: false
+2026-11-25T12:37:20.8786186Z env:
+2026-11-25T12:37:20.8786559Z   TZ: UTC
+2026-11-25T12:37:20.8786958Z ##[endgroup]
+2026-11-25T12:37:21.0113436Z ##[group]Installed versions
+2026-11-25T12:37:21.0210463Z (node:2409) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-25T12:37:21.0214239Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-25T12:37:21.0216630Z Successfully set up CPython (3.11.18)
+2026-11-25T12:37:21.0218681Z ##[endgroup]
+2026-11-25T12:37:21.0918828Z [command]/opt/hostedtoolcache/Python/3.11.18/x64/bin/pip cache dir
+2026-11-25T12:37:21.3337485Z /home/runner/.cache/pip
+2026-11-25T12:37:21.5831859Z pip cache is not found
+2026-11-25T12:37:21.6002422Z ##[group]Run python -m pip install --upgrade pip
+2026-11-25T12:37:21.6003941Z [36;1mpython -m pip install --upgrade pip[0m
+2026-11-25T12:37:21.6005222Z [36;1mpip install -r requirements.lock[0m
+2026-11-25T12:37:21.6007403Z [36;1mpython -c "import yaml, pytest; print('PyYAML', yaml.__version__, '| pytest', pytest.__version__)"[0m
+2026-11-25T12:37:21.6037681Z shell: /usr/bin/bash -e {0}
+2026-11-25T12:37:21.6038754Z env:
+2026-11-25T12:37:21.6039581Z   TZ: UTC
+2026-11-25T12:37:21.6040642Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:21.6042254Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-25T12:37:21.6043877Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:21.6045355Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:21.6047053Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:21.6048648Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-25T12:37:21.6049943Z ##[endgroup]
+2026-11-25T12:37:22.0523891Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages (26.3)
+2026-11-25T12:37:22.5772145Z Collecting PyYAML==6.0.2 (from -r requirements.lock (line 2))
+2026-11-25T12:37:22.6197915Z   Downloading PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2026-11-25T12:37:22.6583636Z Collecting pytest==8.3.4 (from -r requirements.lock (line 3))
+2026-11-25T12:37:22.6687122Z   Downloading pytest-8.3.4-py3-none-any.whl.metadata (7.5 kB)
+2026-11-25T12:37:22.6863475Z Collecting iniconfig==2.0.0 (from -r requirements.lock (line 4))
+2026-11-25T12:37:22.6971658Z   Downloading iniconfig-2.0.0-py3-none-any.whl.metadata (2.6 kB)
+2026-11-25T12:37:22.7173671Z Collecting packaging==24.2 (from -r requirements.lock (line 5))
+2026-11-25T12:37:22.7276849Z   Downloading packaging-24.2-py3-none-any.whl.metadata (3.2 kB)
+2026-11-25T12:37:22.7452620Z Collecting pluggy==1.5.0 (from -r requirements.lock (line 6))
+2026-11-25T12:37:22.7555771Z   Downloading pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)
+2026-11-25T12:37:22.7706073Z Downloading PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (762 kB)
+2026-11-25T12:37:22.8123974Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 763.0/763.0 kB 31.2 MB/s  0:00:00
+2026-11-25T12:37:22.8227307Z Downloading pytest-8.3.4-py3-none-any.whl (343 kB)
+2026-11-25T12:37:22.8360888Z Downloading pluggy-1.5.0-py3-none-any.whl (20 kB)
+2026-11-25T12:37:22.8490136Z Downloading iniconfig-2.0.0-py3-none-any.whl (5.9 kB)
+2026-11-25T12:37:22.8608685Z Downloading packaging-24.2-py3-none-any.whl (65 kB)
+2026-11-25T12:37:22.8947747Z Installing collected packages: PyYAML, pluggy, packaging, iniconfig, pytest
+2026-11-25T12:37:23.1559431Z 
+2026-11-25T12:37:23.1567993Z Successfully installed PyYAML-6.0.2 iniconfig-2.0.0 packaging-24.2 pluggy-1.5.0 pytest-8.3.4
+2026-11-25T12:37:23.3615711Z PyYAML 6.0.2 | pytest 8.3.4
+2026-11-25T12:37:23.3826344Z ##[group]Run start=$(date +%s)
+2026-11-25T12:37:23.3826662Z [36;1mstart=$(date +%s)[0m
+2026-11-25T12:37:23.3827155Z [36;1mpython -m cal run --config cal.yaml --run-id ci-run-1[0m
+2026-11-25T12:37:23.3827580Z [36;1mecho "run1_seconds=$(( $(date +%s) - start ))" | tee run1.time[0m
+2026-11-25T12:37:23.3849671Z shell: /usr/bin/bash -e {0}
+2026-11-25T12:37:23.3849929Z env:
+2026-11-25T12:37:23.3850132Z   TZ: UTC
+2026-11-25T12:37:23.3850398Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:23.3850852Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-25T12:37:23.3851270Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:23.3851669Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:23.3852039Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:23.3852410Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-25T12:37:23.3852762Z ##[endgroup]
+2026-11-25T12:37:23.9617802Z [cal] 开始运行 run_id=ci-run-1 目录=runs/ci-run-1
+2026-11-25T12:37:23.9618432Z 2026-11-25 12:37:23,961 INFO  数据源=generate 企业=300 月数=24 需求卡=200 候选对=60000 正样本率=0.3230
+2026-11-25T12:37:23.9719522Z 2026-11-25 12:37:23,971 INFO  步骤 prepare 完成，耗时 514 ms
+2026-11-25T12:37:23.9806879Z 2026-11-25 12:37:23,980 INFO  画像完成：企业 300 行（活跃度均值 0.4823），需求卡 200 行
+2026-11-25T12:37:23.9821714Z 2026-11-25 12:37:23,981 INFO  步骤 profile 完成，耗时 9 ms
+2026-11-25T12:37:24.2482416Z 2026-11-25 12:37:24,247 INFO  回放完成：200 张卡 × 300 家企业，top1 均分 0.9081，top1≥0.5 占比 1.0000
+2026-11-25T12:37:24.2545262Z 2026-11-25 12:37:24,254 INFO  步骤 replay 完成，耗时 271 ms
+2026-11-25T12:37:24.6949586Z 2026-11-25 12:37:24,694 INFO  评估完成 thr=0.60：precision=0.4570 recall=0.5625 f1=0.5043 auc=0.6676
+2026-11-25T12:37:24.7174332Z 2026-11-25 12:37:24,717 INFO  步骤 eval 完成，耗时 454 ms
+2026-11-25T12:37:25.8382921Z 2026-11-25 12:37:25,837 INFO  阈值扫描完成 19 个点：最优 f1=0.5241 @ thr=0.50
+2026-11-25T12:37:25.8553900Z 2026-11-25 12:37:25,855 INFO  步骤 scan-thresholds 完成，耗时 1129 ms
+2026-11-25T12:37:29.6341608Z 2026-11-25 12:37:29,633 INFO  权重搜索完成 27 组：最优 AUC=0.6681，权重={'industry_match': 0.9, 'region_match': 0.5, 'size_fit': 0.7, 'activity': 1.1, 'resource_overlap': 1.5}
+2026-11-25T12:37:29.6516874Z 2026-11-25 12:37:29,651 INFO  步骤 search 完成，耗时 3788 ms
+2026-11-25T12:37:30.7100023Z 2026-11-25 12:37:30,709 INFO  消融完成：基线 AUC=0.6676，最重要特征=resource_overlap（Δ=0.0621）
+2026-11-25T12:37:30.7283162Z 2026-11-25 12:37:30,728 INFO  步骤 ablation 完成，耗时 1068 ms
+2026-11-25T12:37:30.7310623Z 2026-11-25 12:37:30,730 INFO  报告完成：f1=0.5043 auc=0.6676（metrics.json 已生成）
+2026-11-25T12:37:30.7318708Z 2026-11-25 12:37:30,731 INFO  步骤 report 完成，耗时 2 ms
+2026-11-25T12:37:30.7326055Z [cal] 流水线完成 | run_id=ci-run-1 | metrics=runs/ci-run-1/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 | 总耗时=7.28s
+2026-11-25T12:37:30.7478882Z run1_seconds=7
+2026-11-25T12:37:30.7515495Z ##[group]Run start=$(date +%s)
+2026-11-25T12:37:30.7516265Z [36;1mstart=$(date +%s)[0m
+2026-11-25T12:37:30.7516570Z [36;1mpython -m cal run --config cal.yaml --run-id ci-run-2[0m
+2026-11-25T12:37:30.7517009Z [36;1mecho "run2_seconds=$(( $(date +%s) - start ))" | tee run2.time[0m
+2026-11-25T12:37:30.7538053Z shell: /usr/bin/bash -e {0}
+2026-11-25T12:37:30.7538350Z env:
+2026-11-25T12:37:30.7538533Z   TZ: UTC
+2026-11-25T12:37:30.7538796Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:30.7539219Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-25T12:37:30.7539627Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:30.7539996Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:30.7540354Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:30.7540711Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-25T12:37:30.7541076Z ##[endgroup]
+2026-11-25T12:37:31.3324806Z [cal] 开始运行 run_id=ci-run-2 目录=runs/ci-run-2
+2026-11-25T12:37:31.3326384Z 2026-11-25 12:37:31,332 INFO  数据源=generate 企业=300 月数=24 需求卡=200 候选对=60000 正样本率=0.3230
+2026-11-25T12:37:31.3430256Z 2026-11-25 12:37:31,342 INFO  步骤 prepare 完成，耗时 518 ms
+2026-11-25T12:37:31.3511794Z 2026-11-25 12:37:31,350 INFO  画像完成：企业 300 行（活跃度均值 0.4823），需求卡 200 行
+2026-11-25T12:37:31.3524368Z 2026-11-25 12:37:31,352 INFO  步骤 profile 完成，耗时 8 ms
+2026-11-25T12:37:31.6141898Z 2026-11-25 12:37:31,613 INFO  回放完成：200 张卡 × 300 家企业，top1 均分 0.9081，top1≥0.5 占比 1.0000
+2026-11-25T12:37:31.6194282Z 2026-11-25 12:37:31,619 INFO  步骤 replay 完成，耗时 265 ms
+2026-11-25T12:37:32.0519426Z 2026-11-25 12:37:32,051 INFO  评估完成 thr=0.60：precision=0.4570 recall=0.5625 f1=0.5043 auc=0.6676
+2026-11-25T12:37:32.0689973Z 2026-11-25 12:37:32,068 INFO  步骤 eval 完成，耗时 442 ms
+2026-11-25T12:37:33.1636784Z 2026-11-25 12:37:33,163 INFO  阈值扫描完成 19 个点：最优 f1=0.5241 @ thr=0.50
+2026-11-25T12:37:33.1812990Z 2026-11-25 12:37:33,180 INFO  步骤 scan-thresholds 完成，耗时 1104 ms
+2026-11-25T12:37:36.8112409Z 2026-11-25 12:37:36,810 INFO  权重搜索完成 27 组：最优 AUC=0.6681，权重={'industry_match': 0.9, 'region_match': 0.5, 'size_fit': 0.7, 'activity': 1.1, 'resource_overlap': 1.5}
+2026-11-25T12:37:36.8287817Z 2026-11-25 12:37:36,828 INFO  步骤 search 完成，耗时 3639 ms
+2026-11-25T12:37:37.8275977Z 2026-11-25 12:37:37,827 INFO  消融完成：基线 AUC=0.6676，最重要特征=resource_overlap（Δ=0.0621）
+2026-11-25T12:37:37.8446134Z 2026-11-25 12:37:37,844 INFO  步骤 ablation 完成，耗时 1008 ms
+2026-11-25T12:37:37.8465371Z 2026-11-25 12:37:37,846 INFO  报告完成：f1=0.5043 auc=0.6676（metrics.json 已生成）
+2026-11-25T12:37:37.8473047Z 2026-11-25 12:37:37,847 INFO  步骤 report 完成，耗时 2 ms
+2026-11-25T12:37:37.8480110Z [cal] 流水线完成 | run_id=ci-run-2 | metrics=runs/ci-run-2/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 | 总耗时=7.03s
+2026-11-25T12:37:37.8636251Z run2_seconds=7
+2026-11-25T12:37:37.8684486Z ##[group]Run sha256sum runs/ci-run-1/report/metrics.json runs/ci-run-2/report/metrics.json | tee determinism.txt
+2026-11-25T12:37:37.8685245Z [36;1msha256sum runs/ci-run-1/report/metrics.json runs/ci-run-2/report/metrics.json | tee determinism.txt[0m
+2026-11-25T12:37:37.8686173Z [36;1ma=$(sha256sum runs/ci-run-1/report/metrics.json | cut -d' ' -f1)[0m
+2026-11-25T12:37:37.8686637Z [36;1mb=$(sha256sum runs/ci-run-2/report/metrics.json | cut -d' ' -f1)[0m
+2026-11-25T12:37:37.8686981Z [36;1mif [ "$a" != "$b" ]; then[0m
+2026-11-25T12:37:37.8687259Z [36;1m  echo "::error::两次运行指标 JSON 哈希不一致：$a != $b"[0m
+2026-11-25T12:37:37.8687535Z [36;1m  exit 1[0m
+2026-11-25T12:37:37.8687723Z [36;1mfi[0m
+2026-11-25T12:37:37.8687954Z [36;1mecho "PASS 两次运行 metrics.json SHA-256 完全一致：$a"[0m
+2026-11-25T12:37:37.8709137Z shell: /usr/bin/bash -e {0}
+2026-11-25T12:37:37.8709389Z env:
+2026-11-25T12:37:37.8709571Z   TZ: UTC
+2026-11-25T12:37:37.8709885Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8710303Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-25T12:37:37.8710706Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8711071Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8711431Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8711815Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-25T12:37:37.8712165Z ##[endgroup]
+2026-11-25T12:37:37.8772718Z b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-1/report/metrics.json
+2026-11-25T12:37:37.8774157Z b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-2/report/metrics.json
+2026-11-25T12:37:37.8830793Z PASS 两次运行 metrics.json SHA-256 完全一致：b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
+2026-11-25T12:37:37.8858644Z ##[group]Run python scripts/check_golden.py runs/ci-run-1/report/metrics.json golden/metrics.json --tol 1e-9
+2026-11-25T12:37:37.8859358Z [36;1mpython scripts/check_golden.py runs/ci-run-1/report/metrics.json golden/metrics.json --tol 1e-9[0m
+2026-11-25T12:37:37.8859849Z [36;1mecho "---- 流水线耗时 ----"[0m
+2026-11-25T12:37:37.8860095Z [36;1mcat run1.time run2.time[0m
+2026-11-25T12:37:37.8860340Z [36;1mecho "单次流水线耗时均远小于 15 分钟上限"[0m
+2026-11-25T12:37:37.8880299Z shell: /usr/bin/bash -e {0}
+2026-11-25T12:37:37.8880560Z env:
+2026-11-25T12:37:37.8880754Z   TZ: UTC
+2026-11-25T12:37:37.8881013Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8881433Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-25T12:37:37.8881844Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8882207Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8882614Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.8882981Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-25T12:37:37.8883287Z ##[endgroup]
+2026-11-25T12:37:37.9158202Z 比对数值叶子 39 个，最大差值 0.000e+00（容差 1e-09）
+2026-11-25T12:37:37.9158789Z FAIL 发现 1 处不一致：
+2026-11-25T12:37:37.9159873Z   - $.pipeline.config_sha256: '1920e719ea83fff98e2eb905e8f8d302dbad2b02c254301cc600f093ad9afa58' != '8754a9bda87714abfd10163bb55c90f73877e498d92317881c9f4c73c7209978'
+2026-11-25T12:37:37.9210786Z ##[error]Process completed with exit code 1.
+2026-11-25T12:37:37.9268254Z ##[group]Run echo "### cal-pipeline CI 结果" >> $GITHUB_STEP_SUMMARY
+2026-11-25T12:37:37.9268704Z [36;1mecho "### cal-pipeline CI 结果" >> $GITHUB_STEP_SUMMARY[0m
+2026-11-25T12:37:37.9269034Z [36;1mecho "" >> $GITHUB_STEP_SUMMARY[0m
+2026-11-25T12:37:37.9269309Z [36;1mecho '```' >> $GITHUB_STEP_SUMMARY[0m
+2026-11-25T12:37:37.9269729Z [36;1mcat determinism.txt run1.time run2.time 2>/dev/null >> $GITHUB_STEP_SUMMARY || true[0m
+2026-11-25T12:37:37.9270157Z [36;1mecho '```' >> $GITHUB_STEP_SUMMARY[0m
+2026-11-25T12:37:37.9290631Z shell: /usr/bin/bash -e {0}
+2026-11-25T12:37:37.9290882Z env:
+2026-11-25T12:37:37.9291063Z   TZ: UTC
+2026-11-25T12:37:37.9291326Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.9291751Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-25T12:37:37.9292162Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.9292593Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.9292959Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-25T12:37:37.9293326Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-25T12:37:37.9293630Z ##[endgroup]
+2026-11-25T12:37:37.9566990Z Post job cleanup.
+2026-11-25T12:37:38.0436723Z [command]/usr/bin/git version
+2026-11-25T12:37:38.0466610Z git version 2.56.1
+2026-11-25T12:37:38.0513860Z Temporarily overriding HOME='/home/runner/work/_temp/fcc03eb2-88dc-46cc-b4c1-3c64def467c0' before making global git config changes
+2026-11-25T12:37:38.0515153Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-25T12:37:38.0521148Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cal-pipeline/cal-pipeline
+2026-11-25T12:37:38.0563591Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-25T12:37:38.0600885Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-25T12:37:38.0850472Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-25T12:37:38.0874046Z http.https://github.com/.extraheader
+2026-11-25T12:37:38.0885903Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-25T12:37:38.0919175Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-25T12:37:38.1187838Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-25T12:37:38.1228204Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-25T12:37:38.1584121Z Cleaning up orphan processes
+2026-11-25T12:37:38.1878079Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

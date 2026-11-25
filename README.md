@@ -72,10 +72,11 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 
 1. **单一熵源**：所有随机过程（数据生成、标签噪声、候选排序）都从 `cal.yaml` 的 `seed` 派生，代码里不存在 `random.random()` 这类无种子调用。
 2. **确定性序列化**：JSON 统一 `sort_keys=True`、固定缩进、UTF-8 + LF；所有浮点统一 `round(x, 10)`，消除末位噪声。
-3. **产物不含易变信息**：`metrics.json` 不写时间戳、不写 run_id，所以两次运行能逐字节一致。
-4. **依赖锁版本**：`requirements.lock` 固定 PyYAML 6.0.2 / pytest 8.3.4 等版本，CI 与本机一致（Python 3.11）。
-5. **运行目录隔离**：默认 `run_id` 带 UTC 时间戳；同一 run_id 目录已存在时拒绝运行，避免复用半成品目录。
-6. **哈希清单**：`manifest.json` 记录每步输入/输出的 SHA-256 与字节数，任何一步产物变化都能定位。
+3. **配置哈希跨平台一致**：`config_sha256` 按规范化文本（CRLF/CR → LF）计算，避免 Windows 检出（CRLF）与 Linux CI（LF）算出不同哈希。
+4. **产物不含易变信息**：`metrics.json` 不写时间戳、不写 run_id，所以两次运行能逐字节一致。
+5. **依赖锁版本**：`requirements.lock` 固定 PyYAML 6.0.2 / pytest 8.3.4 等版本，CI 与本机一致（Python 3.11）。
+6. **运行目录隔离**：默认 `run_id` 带 UTC 时间戳；同一 run_id 目录已存在时拒绝运行，避免复用半成品目录。
+7. **哈希清单**：`manifest.json` 记录每步输入/输出的 SHA-256 与字节数，任何一步产物变化都能定位。
 
 ## 5. 验收标准对照
 
@@ -93,19 +94,19 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 ```
 $ python -m pytest -q
 ..............                                                           [100%]
-14 passed in 29.35s
+14 passed in 43.37s
 ```
 
 两次完整运行、哈希一致：
 
 ```
 $ python -m cal run --config cal.yaml --run-id r1
-[cal] 流水线完成 | run_id=r1 | metrics=runs/r1/report/metrics.json | sha256=e6f4971708b8f5e6007f1bfb37d925a4622002387ade703c6f578b06e122c435 | 总耗时=10.02s
+[cal] 流水线完成 | run_id=r1 | metrics=runs/r1/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 | 总耗时=10.15s
 $ python -m cal run --config cal.yaml --run-id r2
-[cal] 流水线完成 | run_id=r2 | metrics=runs/r2/report/metrics.json | sha256=e6f4971708b8f5e6007f1bfb37d925a4622002387ade703c6f578b06e122c435 | 总耗时=8.47s
+[cal] 流水线完成 | run_id=r2 | metrics=runs/r2/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 | 总耗时=11.02s
 $ sha256sum runs/r1/report/metrics.json runs/r2/report/metrics.json
-e6f4971708b8f5e6007f1bfb37d925a4622002387ade703c6f578b06e122c435 *runs/r1/report/metrics.json
-e6f4971708b8f5e6007f1bfb37d925a4622002387ade703c6f578b06e122c435 *runs/r2/report/metrics.json
+b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 *runs/r1/report/metrics.json
+b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 *runs/r2/report/metrics.json
 ```
 
 黄金值比对：

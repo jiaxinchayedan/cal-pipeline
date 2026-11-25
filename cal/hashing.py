@@ -20,6 +20,17 @@ def sha256_file(path: str | Path) -> str:
     return h.hexdigest()
 
 
+def sha256_text_normalized(path: str | Path) -> str:
+    """按规范化文本哈希（CRLF/CR → LF，UTF-8）。
+
+    避免同一份配置在 Windows（CRLF）与 Linux CI（LF）下哈希不同，
+    保证"配置哈希"跨平台一致。
+    """
+    text = Path(path).read_text(encoding="utf-8")
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
 def canonical_json(obj: Any, indent: int = 2) -> str:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=indent) + "\n"
 

@@ -45,7 +45,7 @@
     "tp": 10901
   },
   "pipeline": {
-    "config_sha256": "1920e719ea83fff98e2eb905e8f8d302dbad2b02c254301cc600f093ad9afa58",
+    "config_sha256": "8754a9bda87714abfd10163bb55c90f73877e498d92317881c9f4c73c7209978",
     "seed": 20261125,
     "steps": 8
   },
