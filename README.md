@@ -58,6 +58,8 @@ python -m pip install -r requirements.lock
 python -m cal run --config cal.yaml            # 默认 run_id = UTC 时间戳 + 配置哈希
 python -m cal run --config cal.yaml --run-id demo-1
 python -m cal steps                            # 查看八步顺序
+# 让 `cal run --config cal.yaml` 与本机命令行完全一致：
+export PATH="$PWD/bin:$PATH" && cal run --config cal.yaml
 python -m cal run --config cal.yaml --fail-step eval   # 故障注入（验证失败语义）
 ```
 
@@ -214,3 +216,5 @@ python -m cal run --config cal.yaml   # cal.yaml 中 data.source 改成 extract
 - **跨机器浮点**：本流水线只承诺同一环境（同一 Python 小版本、同一依赖版本）下逐字节一致；跨架构（如 x86 / ARM）不保证最后一位浮点一致，CI 与本机均为 CPython 3.11/3.13 的 x86_64 环境。
 - **`extract` 模式**需自备 `data/raw` 三家原始表，脱敏仅覆盖手机号、邮箱、身份证号三类模式，真实业务字段脱敏策略需按客户规范扩展。
 - **数据为虚构**：行业、区域、企业、需求卡均由种子生成，不对应任何真实主体。
+- **黄金值的来源**：`golden/metrics.json` 由基线版本首次运行产出，经人工核对后作为「合约」入库。它保证的是「算法与数据不再漂移」，不是「模型效果最优」。任何算法或种子变更都必须同步更新黄金值并在提交说明里写清原因，否则 CI 会红。
+- **CI 证据的时效性**：README 中的截图取自 run #4，数字取自 run #8，两者判定逻辑一致；每次推送都会重新验证，历史运行记录在 Actions 页面可查。
