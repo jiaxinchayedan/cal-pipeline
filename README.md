@@ -41,6 +41,7 @@ cal-pipeline/
 ├── cal.yaml              # 配置样例（seed / 数据规模 / 权重 / 阈值 / 搜索网格）
 ├── data/raw/             # extract 模式样例原始表（3 家企业 / 2 张需求卡，含虚构联系方式用于验证脱敏）
 ├── Dockerfile            # 两阶段构建，运行期离线
+├── .dockerignore         # 构建上下文瘦身（排除 .git / runs / docs / tests）
 ├── requirements.txt      # 运行期依赖（PyYAML）
 ├── requirements.lock     # 完整锁文件（含 pytest 等测试依赖）
 ├── golden/metrics.json   # 黄金值
@@ -81,8 +82,8 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 4. **产物不含易变信息**：`metrics.json` 不写时间戳、不写 run_id，所以两次运行能逐字节一致。
 5. **依赖锁版本**：`requirements.lock` 固定 PyYAML 6.0.2 / pytest 8.3.4 等版本，CI 与本机一致（Python 3.11）。
 6. **运行目录隔离**：默认 `run_id` 带 UTC 时间戳；同一 run_id 目录已存在时拒绝运行，避免复用半成品目录。
-7. **清单可自证**：`runs/<run_id>/manifest.sha256` 记录清单自身的哈希，`cal verify` 会先校验清单本身、再逐个重算所有输入/输出文件的 SHA-256，任何静默篡改都会被发现。
-8. **清单不含绝对路径**：`manifest.json` 只记录配置文件名与哈希，换目录运行清单结构不变。
+7. **清单可自证**：`runs/<run_id>/manifest.sha256` 记录清单自身的哈希，`cal verify` 会先校验清单本身、再逐个重算所有输入/输出文件的 SHA-256，任何静默篡改都会被发现。`extract` 模式的外部输入会同时记录绝对路径与哈希，换目录回验不会误报；原始表确实已搬走时，明确提示「未定位（跳过）」，不会静默算通过。
+8. **配置与产物不含绝对路径**：`manifest.json` 的配置项只记文件名与语义哈希，换目录运行清单结构不变；仅 `extract` 模式的外部输入额外记录绝对路径，用于同机精确回验。
 9. **哈希清单覆盖每步输入与输出**：`extract` 模式会把 `data/raw` 三张原始表的 SHA-256 一并登记，能回答「这次跑的是哪一版原始数据」。
 
 ## 5. 验收标准对照

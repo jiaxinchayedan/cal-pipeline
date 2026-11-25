@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -96,6 +97,20 @@ def test_extract_mode_completes_and_masks_contacts(tmp_path: Path) -> None:
         timeout=300,
     )
     assert verified.returncode == 0, verified.stderr
+
+    # 换一个 cwd 回验（原始表路径已记绝对路径，不应误报"缺失文件"）
+    env = dict(os.environ, PYTHONPATH=str(ROOT))
+    verified_elsewhere = subprocess.run(
+        [sys.executable, "-m", "cal", "verify", "--run-dir", str(runs / "ex-1")],
+        cwd=str(tmp_path),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=300,
+        env=env,
+    )
+    assert verified_elsewhere.returncode == 0, verified_elsewhere.stderr
+    assert "未定位" not in verified_elsewhere.stderr
 
 
 def test_extract_mode_reports_missing_raw_tables(tmp_path: Path) -> None:

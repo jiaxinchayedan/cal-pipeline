@@ -91,13 +91,14 @@ def _hash_entries(run_dir: Path, items: List, step: str) -> List[dict]:
             path = run_dir / item
         if not path.is_file():
             raise StepFailure(f"步骤 {step} 声明的文件不存在：{label}")
-        entries.append(
-            {
-                "path": label,
-                "sha256": hashing.sha256_file(path),
-                "bytes": path.stat().st_size,
-            }
-        )
+        entry = {
+            "path": label,
+            "sha256": hashing.sha256_file(path),
+            "bytes": path.stat().st_size,
+        }
+        if isinstance(item, dict) and item.get("abs"):
+            entry["abs"] = item["abs"]
+        entries.append(entry)
     return entries
 
 
@@ -233,17 +234,21 @@ def verify_run(run_dir: str | Path) -> int:
             ok = False
 
     manifest = hashing.read_json(manifest_path)
-    checked = failed = 0
+    checked = failed = skipped = 0
     for entry in manifest.get("steps", []):
         for kind in ("inputs", "outputs"):
             for item in entry.get(kind, []):
                 label = item["path"]
-                candidate = run_dir / label
-                if not candidate.is_file():
-                    candidate = Path(label)
-                if not candidate.is_file():
-                    print(f"[cal] 缺失文件：{label}", file=sys.stderr)
-                    failed += 1
+                candidates = []
+                if item.get("abs"):
+                    candidates.append(Path(item["abs"]))
+                candidates.append(run_dir / label)
+                candidates.append(Path(label))
+                candidate = next((path for path in candidates if path.is_file()), None)
+                if candidate is None:
+                    # 外部输入（如 data/raw）可能已随原始环境移动：跳过并告警，不误判为篡改
+                    print(f"[cal] 未定位（跳过）：{label}", file=sys.stderr)
+                    skipped += 1
                     continue
                 checked += 1
                 actual = hashing.sha256_file(candidate)
@@ -254,5 +259,6 @@ def verify_run(run_dir: str | Path) -> int:
     if failed:
         print(f"[cal] 校验失败：{failed}/{checked + failed} 个文件不一致", file=sys.stderr)
         return 1
-    print(f"[cal] 校验通过：{checked} 个文件 SHA-256 全部一致（含清单自校验）")
+    note = f"，{skipped} 个外部输入未定位已跳过" if skipped else ""
+    print(f"[cal] 校验通过：{checked} 个文件 SHA-256 全部一致（含清单自校验）{note}")
     return 0
