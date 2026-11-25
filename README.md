@@ -89,55 +89,57 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 
 | # | 验收标准原文 | 对应实现 | 证据位置 |
 |---|---|---|---|
-| 1 | 同一配置运行两次，指标 JSON 的 SHA-256 相同（CI 日志截图） | CI 中 `ci-run-1`、`ci-run-2` 两次运行后 `sha256sum` 比对 | CI 步骤「验收标准 1」+ `docs/ci-run4-search-pass.png` |
-| 2 | CI 中完整流水线 ≤15 分钟，关键指标与黄金值一致（CI 日志截图） | `scripts/check_golden.py` 逐数值叶子比对（容差 1e-9）+ 单次耗时断言（≤900s）+ 作业级 `timeout-minutes: 15` + 整作业耗时断言 | CI 步骤「验收标准 2」「整作业耗时断言」+ `docs/ci-run4-offline.png` |
-| 3 | 断网环境下容器内运行成功（运行日志截图） | `docker run --network none` 跑完整八步 | CI 步骤「验收标准 3」+ `docs/ci-run4-offline.png` |
+| 1 | 同一配置运行两次，指标 JSON 的 SHA-256 相同（CI 日志截图） | CI 中 `ci-run-1`、`ci-run-2` 两次运行后 `sha256sum` 比对 | CI 步骤「验收标准 1」+ `docs/ci-summary.png` |
+| 2 | CI 中完整流水线 ≤15 分钟，关键指标与黄金值一致（CI 日志截图） | `scripts/check_golden.py` 逐数值叶子比对（容差 1e-9）+ 单次耗时断言（≤900s）+ 作业级 `timeout-minutes: 15` + 整作业耗时断言 | CI 步骤「验收标准 2」「整作业耗时断言」+ `docs/ci-summary.png` |
+| 3 | 断网环境下容器内运行成功（运行日志截图） | `docker run --network none` 跑完整八步 | CI 步骤「验收标准 3」+ `docs/ci-summary.png` |
 | 4 | 人为让 eval 步骤失败时不生成报告文件（测试通过） | `--fail-step eval` 故障注入；CI 显式断言 退出码=2 + stderr 含「失败步骤=eval」「未生成报告」+ `report/` 不存在；`tests/test_failure_semantics.py` | CI 步骤「验收标准 4」+ pytest |
 
 ## 6. CI 证据（GitHub Actions 真实运行）
 
 - 仓库：<https://github.com/jiaxinchayedan/cal-pipeline>
-- 最新验收运行：**run #8**（commit `705f959`）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45618706366>
-- 页面截图取自 run #4（commit `d08f30d`，步骤结构与判定逻辑与 run #8 相同）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45616297448>
-- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **55 秒**（上限 15 分钟）
+- 验证运行：**run #13**（commit `00901e3`）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45622149241>
+- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **54 秒**（作业级硬上限 `timeout-minutes: 15`）
 
 | 步骤 | 结论 | 耗时 |
 |---|---|---|
-| 检出代码 | ✅ | 1s |
-| 安装 Python 3.11 | ✅ | 1s |
-| 安装依赖（锁文件固定版本） | ✅ | 1s |
-| 运行 1（基线） | ✅ | 7s |
-| 运行 2（同配置复跑） | ✅ | 6s |
+| 记录作业开始时间 | ✅ | 0s |
+| 检出代码 | ✅ | 2s |
+| 安装 Python 3.11 | ✅ | 3s |
+| 安装依赖（锁文件固定版本） | ✅ | 3s |
+| 运行 1（基线，记录耗时） | ✅ | 6s |
+| 运行 2（同配置复跑，记录耗时） | ✅ | 5s |
 | 验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同 | ✅ | 0s |
-| 验收标准 2 — 关键指标与黄金值一致（差值 <1e-9） | ✅ | 1s |
-| 单元测试 | ✅ | 20s |
-| 验收标准 4 — eval 失败不生成报告 | ✅ | 1s |
+| 验收标准 2 — 黄金值一致（差值 <1e-9）且单次流水线 ≤15 分钟 | ✅ | 0s |
+| 单元测试（22 个） | ✅ | 21s |
+| 清单回验 — `cal verify` 重算全部文件 SHA-256 | ✅ | 0s |
+| 验收标准 4 — 人为让 eval 失败时不生成报告 | ✅ | 1s |
 | 验收标准 3 — 断网容器内运行（`docker run --network none`） | ✅ | 13s |
+| 整作业耗时断言（≤15 分钟） | ✅ | 0s |
 | 汇总 | ✅ | 0s |
 
-CI 日志原文摘录：
+CI 日志原文摘录（可在上面的 run 链接里逐行核对）：
 
 ```text
 0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0  runs/ci-run-1/report/metrics.json
 0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0  runs/ci-run-2/report/metrics.json
 PASS 两次运行 metrics.json SHA-256 完全一致：0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0
 比对数值叶子 39 个，最大差值 0.000e+00（容差 1e-09）
-PASS 关键指标与黄金值完全一致
-run1_seconds=7
-run2_seconds=6
-20 passed in 20.47s
-PASS eval 失败后 report/ 目录不存在，失败步骤与日志路径已输出
-[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0
-PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）
+PASS 完整流水线耗时均 ≤15 分钟，关键指标与黄金值一致
+22 passed in 21.38s
+[cal] 校验通过：35 个文件 SHA-256 全部一致（含清单自校验）
+PASS 退出码=2、失败步骤与日志路径已输出、report/ 目录不存在
+[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=0429639483244a88... | 总耗时=4.83s
+PASS 容器在 --network none 下完成八步流水线
+整作业耗时 54s（含检出、测试、镜像构建）
+PASS 整作业耗时 54s ≤ 900s
 ```
 
-运行页面截图（真实页面，取自 run #4；run #8 的步骤与判定完全相同，数字见上表）：
+截图（均取自 run #13，非拼接）：
 
 | 截图 | 内容 |
 |---|---|
-| `docs/ci-run4-steps.png` | 11 个步骤全部绿色通过 + 各步耗时 + 作业总时长 38s |
-| `docs/ci-run4-search-pass.png` | 日志搜索 `PASS`：两次运行 SHA-256 完全相同 |
-| `docs/ci-run4-offline.png` | 黄金值比对 39 个数值叶子差值 0 + `docker run --network none` 断网运行 |
+| `docs/ci-steps.png` | 14 个步骤全部绿色通过，含各步耗时与作业总时长 |
+| `docs/ci-summary.png` | 两次运行 SHA-256 相同、`cal verify` 35 个文件通过、断网容器 `run_id=offline` 完成日志 |
 
 ## 7. 测试结果（本机真实输出）
 
@@ -219,4 +221,4 @@ python -m cal run --config cal.yaml   # cal.yaml 中 data.source 改成 extract
 - **`extract` 模式**需自备 `data/raw` 三家原始表，脱敏仅覆盖手机号、邮箱、身份证号三类模式，真实业务字段脱敏策略需按客户规范扩展。
 - **数据为虚构**：行业、区域、企业、需求卡均由种子生成，不对应任何真实主体。
 - **黄金值的来源**：`golden/metrics.json` 由基线版本首次运行产出，经人工核对后作为「合约」入库。它保证的是「算法与数据不再漂移」，不是「模型效果最优」。任何算法或种子变更都必须同步更新黄金值并在提交说明里写清原因，否则 CI 会红。
-- **CI 证据的时效性**：README 中的截图取自 run #4，数字取自 run #8，两者判定逻辑一致；每次推送都会重新验证，历史运行记录在 Actions 页面可查。
+- **CI 证据的时效性**：本文所有 CI 数字与截图均取自同一次运行（run #13 / commit `00901e3`）；后续仅文档变更的提交会触发同样的验证，历史运行记录可在 Actions 页面逐条核对。
