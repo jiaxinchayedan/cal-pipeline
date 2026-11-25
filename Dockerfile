@@ -19,6 +19,9 @@ COPY --from=builder /install /usr/local
 WORKDIR /app
 COPY cal ./cal
 COPY cal.yaml ./
+COPY golden ./golden
+COPY data/raw ./data/raw
+COPY scripts ./scripts
 COPY bin/cal /usr/local/bin/cal
 RUN chmod 0755 /usr/local/bin/cal \
     && useradd --create-home --uid 10001 cal \

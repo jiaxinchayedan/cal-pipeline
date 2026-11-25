@@ -20,15 +20,13 @@ def sha256_file(path: str | Path) -> str:
     return h.hexdigest()
 
 
-def sha256_text_normalized(path: str | Path) -> str:
-    """按规范化文本哈希（CRLF/CR → LF，UTF-8）。
+def sha256_json(obj: Any) -> str:
+    """对配置的语义内容做哈希：与文件行尾、缩进、注释无关，只与解析后的值有关。
 
-    避免同一份配置在 Windows（CRLF）与 Linux CI（LF）下哈希不同，
-    保证"配置哈希"跨平台一致。
+    这样 Windows（CRLF）与 Linux CI（LF）得到同一个哈希，
+    且改动注释不会意外让黄金值比对失败。
     """
-    text = Path(path).read_text(encoding="utf-8")
-    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
-    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+    return hashlib.sha256(canonical_json(obj).encode("utf-8")).hexdigest()
 
 
 def canonical_json(obj: Any, indent: int = 2) -> str:

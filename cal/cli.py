@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 
 from . import __version__
-from .pipeline import STEP_ORDER, run_pipeline
+from .pipeline import STEP_ORDER, run_pipeline, verify_run
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -28,6 +28,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     sub.add_parser("steps", help="列出八步执行顺序")
+
+    verify = sub.add_parser("verify", help="回验一次运行：重算清单与全部文件 SHA-256")
+    verify.add_argument("--run-dir", required=True, help="运行目录，例如 runs/20261125T…")
     return parser
 
 
@@ -37,6 +40,8 @@ def main(argv=None) -> int:
         for index, name in enumerate(STEP_ORDER, start=1):
             print(f"{index}. {name}")
         return 0
+    if args.command == "verify":
+        return verify_run(args.run_dir)
     return run_pipeline(
         config_path=args.config,
         run_id=args.run_id,

@@ -61,6 +61,7 @@ python -m cal steps                            # 查看八步顺序
 # 让 `cal run --config cal.yaml` 与本机命令行完全一致：
 export PATH="$PWD/bin:$PATH" && cal run --config cal.yaml
 python -m cal run --config cal.yaml --fail-step eval   # 故障注入（验证失败语义）
+python -m cal verify --run-dir runs/<run_id>           # 回验：重算清单与全部文件 SHA-256
 ```
 
 ### Docker（运行期不需要外网）
@@ -76,21 +77,22 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 
 1. **单一熵源**：所有随机过程（数据生成、标签噪声、候选排序）都从 `cal.yaml` 的 `seed` 派生，代码里不存在 `random.random()` 这类无种子调用。
 2. **确定性序列化**：JSON 统一 `sort_keys=True`、固定缩进、UTF-8 + LF；所有浮点统一 `round(x, 10)`，消除末位噪声。
-3. **配置哈希跨平台一致**：`config_sha256` 按规范化文本（CRLF/CR → LF）计算，避免 Windows 检出（CRLF）与 Linux CI（LF）算出不同哈希。
+3. **配置哈希是语义哈希**：`config_sha256` 由解析后的配置对象做规范化 JSON 哈希得到，与文件行尾（CRLF/LF）、缩进、注释都无关，只随真实参数变化；改注释不会再误伤黄金值比对。
 4. **产物不含易变信息**：`metrics.json` 不写时间戳、不写 run_id，所以两次运行能逐字节一致。
 5. **依赖锁版本**：`requirements.lock` 固定 PyYAML 6.0.2 / pytest 8.3.4 等版本，CI 与本机一致（Python 3.11）。
 6. **运行目录隔离**：默认 `run_id` 带 UTC 时间戳；同一 run_id 目录已存在时拒绝运行，避免复用半成品目录。
-7. **清单不含绝对路径**：`manifest.json` 只记录配置文件名与哈希，换目录运行清单结构不变。
-8. **哈希清单**：`manifest.json` 记录每步输入/输出的 SHA-256 与字节数，任何一步产物变化都能定位。
+7. **清单可自证**：`runs/<run_id>/manifest.sha256` 记录清单自身的哈希，`cal verify` 会先校验清单本身、再逐个重算所有输入/输出文件的 SHA-256，任何静默篡改都会被发现。
+8. **清单不含绝对路径**：`manifest.json` 只记录配置文件名与哈希，换目录运行清单结构不变。
+9. **哈希清单覆盖每步输入与输出**：`extract` 模式会把 `data/raw` 三张原始表的 SHA-256 一并登记，能回答「这次跑的是哪一版原始数据」。
 
 ## 5. 验收标准对照
 
 | # | 验收标准原文 | 对应实现 | 证据位置 |
 |---|---|---|---|
 | 1 | 同一配置运行两次，指标 JSON 的 SHA-256 相同（CI 日志截图） | CI 中 `ci-run-1`、`ci-run-2` 两次运行后 `sha256sum` 比对 | CI 步骤「验收标准 1」+ `docs/ci-run4-search-pass.png` |
-| 2 | CI 中完整流水线 ≤15 分钟，关键指标与黄金值一致（CI 日志截图） | `scripts/check_golden.py` 逐数值叶子比对，容差 1e-9；单次流水线约 10 秒 | CI 步骤「验收标准 2」+ `docs/ci-run4-offline.png` |
+| 2 | CI 中完整流水线 ≤15 分钟，关键指标与黄金值一致（CI 日志截图） | `scripts/check_golden.py` 逐数值叶子比对（容差 1e-9）+ 单次耗时断言（≤900s）+ 作业级 `timeout-minutes: 15` + 整作业耗时断言 | CI 步骤「验收标准 2」「整作业耗时断言」+ `docs/ci-run4-offline.png` |
 | 3 | 断网环境下容器内运行成功（运行日志截图） | `docker run --network none` 跑完整八步 | CI 步骤「验收标准 3」+ `docs/ci-run4-offline.png` |
-| 4 | 人为让 eval 步骤失败时不生成报告文件（测试通过） | `--fail-step eval` 故障注入；`tests/test_failure_semantics.py` | CI 步骤「验收标准 4」+ pytest |
+| 4 | 人为让 eval 步骤失败时不生成报告文件（测试通过） | `--fail-step eval` 故障注入；CI 显式断言 退出码=2 + stderr 含「失败步骤=eval」「未生成报告」+ `report/` 不存在；`tests/test_failure_semantics.py` | CI 步骤「验收标准 4」+ pytest |
 
 ## 6. CI 证据（GitHub Actions 真实运行）
 
@@ -116,16 +118,16 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 CI 日志原文摘录：
 
 ```text
-b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-1/report/metrics.json
-b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03  runs/ci-run-2/report/metrics.json
-PASS 两次运行 metrics.json SHA-256 完全一致：b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
+0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0  runs/ci-run-1/report/metrics.json
+0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0  runs/ci-run-2/report/metrics.json
+PASS 两次运行 metrics.json SHA-256 完全一致：0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0
 比对数值叶子 39 个，最大差值 0.000e+00（容差 1e-09）
 PASS 关键指标与黄金值完全一致
 run1_seconds=7
 run2_seconds=6
 20 passed in 20.47s
 PASS eval 失败后 report/ 目录不存在，失败步骤与日志路径已输出
-[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03
+[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0
 PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）
 ```
 
@@ -144,19 +146,19 @@ PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal
 ```
 $ python -m pytest -q
 ..............                                                           [100%]
-20 passed in 30.22s
+22 passed in 57.71s
 ```
 
 两次完整运行、哈希一致：
 
 ```
 $ python -m cal run --config cal.yaml --run-id r1
-[cal] 流水线完成 | run_id=r1 | metrics=runs/r1/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 | 总耗时=10.15s
+[cal] 流水线完成 | run_id=r1 | metrics=runs/r1/report/metrics.json | sha256=0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0 | 总耗时=10.15s
 $ python -m cal run --config cal.yaml --run-id r2
-[cal] 流水线完成 | run_id=r2 | metrics=runs/r2/report/metrics.json | sha256=b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 | 总耗时=11.02s
+[cal] 流水线完成 | run_id=r2 | metrics=runs/r2/report/metrics.json | sha256=0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0 | 总耗时=11.02s
 $ sha256sum runs/r1/report/metrics.json runs/r2/report/metrics.json
-b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 *runs/r1/report/metrics.json
-b2f36fb4aeb3ea00d08a25869e0d98f7608d54c91fdc5193034d2d026c0a4a03 *runs/r2/report/metrics.json
+0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0 *runs/r1/report/metrics.json
+0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0 *runs/r2/report/metrics.json
 ```
 
 黄金值比对：

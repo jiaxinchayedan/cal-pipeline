@@ -9,11 +9,18 @@ jobs:
   pipeline:
     name: 八步流水线 / 可复现 / 离线容器
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 硬上限：作业总时长超过 15 分钟由 runner 直接终止（必红）
+    timeout-minutes: 15
     env:
       TZ: UTC
+      PIPELINE_BUDGET_SECONDS: "900"
 
     steps:
+      - name: 记录作业开始时间
+        run: |
+          set -euo pipefail
+          date +%s | tee job_start.txt
+
       - name: 检出代码
         uses: actions/checkout@v4
 
@@ -25,24 +32,28 @@ jobs:
 
       - name: 安装依赖（锁文件固定版本）
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
           pip install -r requirements.lock
           python -c "import yaml, pytest; print('PyYAML', yaml.__version__, '| pytest', pytest.__version__)"
 
       - name: 运行 1（基线，记录耗时）
         run: |
+          set -euo pipefail
           start=$(date +%s)
           python -m cal run --config cal.yaml --run-id ci-run-1
           echo "run1_seconds=$(( $(date +%s) - start ))" | tee run1.time
 
       - name: 运行 2（同配置复跑，记录耗时）
         run: |
+          set -euo pipefail
           start=$(date +%s)
           python -m cal run --config cal.yaml --run-id ci-run-2
           echo "run2_seconds=$(( $(date +%s) - start ))" | tee run2.time
 
       - name: 验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同
         run: |
+          set -euo pipefail
           sha256sum runs/ci-run-1/report/metrics.json runs/ci-run-2/report/metrics.json | tee determinism.txt
           a=$(sha256sum runs/ci-run-1/report/metrics.json | cut -d' ' -f1)
           b=$(sha256sum runs/ci-run-2/report/metrics.json | cut -d' ' -f1)
@@ -52,35 +63,72 @@ jobs:
           fi
           echo "PASS 两次运行 metrics.json SHA-256 完全一致：$a"
 
-      - name: 验收标准 2 — 关键指标与黄金值一致（差值 <1e-9）
+      - name: 验收标准 2 — 黄金值一致（<1e-9）且单次流水线 ≤15 分钟
         run: |
+          set -euo pipefail
           python scripts/check_golden.py runs/ci-run-1/report/metrics.json golden/metrics.json --tol 1e-9
-          echo "---- 流水线耗时 ----"
-          cat run1.time run2.time
-          echo "单次流水线耗时均远小于 15 分钟上限"
+          run1=$(cut -d= -f2 run1.time)
+          run2=$(cut -d= -f2 run2.time)
+          budget="${PIPELINE_BUDGET_SECONDS}"
+          echo "单次流水线耗时：run1=${run1}s run2=${run2}s（上限 ${budget}s）"
+          if [ "$run1" -gt "$budget" ] || [ "$run2" -gt "$budget" ]; then
+            echo "::error::单次流水线耗时超过 15 分钟上限"
+            exit 1
+          fi
+          echo "PASS 完整流水线耗时均 ≤15 分钟，关键指标与黄金值一致"
 
-      - name: 单元测试（配置 / 模型 / 清单 / 确定性 / 失败语义）
-        run: python -m pytest -q
+      - name: 单元测试（配置 / 模型 / 哈希 / 清单 / 确定性 / 失败语义 / extract / verify）
+        run: |
+          set -euo pipefail
+          python -m pytest -q
+
+      - name: 清单回验 — cal verify 重算全部文件 SHA-256
+        run: |
+          set -euo pipefail
+          python -m cal verify --run-dir runs/ci-run-1 | tee verify.txt
+          grep -q "校验通过" verify.txt
+          echo "PASS 清单与 35 个登记文件哈希全部自洽（含清单自校验）"
 
       - name: 验收标准 4 — 人为让 eval 失败时不生成报告
         run: |
-          python -m cal run --config cal.yaml --runs-dir runs/failure --run-id inject-eval --fail-step eval || true
-          test ! -f runs/failure/inject-eval/report/metrics.json
-          test ! -f runs/failure/inject-eval/report/report.md
+          set -uo pipefail
+          set +e
+          python -m cal run --config cal.yaml --runs-dir runs/failure --run-id inject-eval --fail-step eval > failure.out 2> failure.err
+          code=$?
+          set -e
+          echo "退出码=$code"
+          test "$code" -eq 2
+          cat failure.err
+          grep -q "失败步骤=eval" failure.err
+          grep -q "未生成报告" failure.err
+          test ! -e runs/failure/inject-eval/report
           test -f runs/failure/inject-eval/logs/eval.log
-          echo "PASS eval 失败后 report/ 目录不存在，失败步骤与日志路径已输出"
+          echo "PASS 退出码=2、失败步骤与日志路径已输出、report/ 目录不存在"
 
       - name: 验收标准 3 — 断网容器内运行（docker run --network none）
         run: |
+          set -euo pipefail
           docker build -t cal-pipeline:ci .
           docker run --rm --network none cal-pipeline:ci run --config cal.yaml --run-id offline
           echo "PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）"
 
+      - name: 整作业耗时断言（≤15 分钟）
+        if: always()
+        run: |
+          set -euo pipefail
+          elapsed=$(( $(date +%s) - $(cat job_start.txt) ))
+          echo "整作业耗时 ${elapsed}s（含检出、测试、镜像构建）"
+          test "$elapsed" -le 900
+          echo "PASS 整作业耗时 ${elapsed}s ≤ 900s"
+
       - name: 汇总
         if: always()
         run: |
-          echo "### cal-pipeline CI 结果" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat determinism.txt run1.time run2.time 2>/dev/null >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          {
+            echo "### cal-pipeline CI 结果"
+            echo ""
+            echo '```'
+            cat determinism.txt run1.time run2.time 2>/dev/null || true
+            cat verify.txt 2>/dev/null || true
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY

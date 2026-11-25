@@ -76,15 +76,24 @@ def _make_logger(step: str, log_path: Path) -> logging.Logger:
     return logger
 
 
-def _hash_entries(run_dir: Path, rel_paths: List[str], step: str) -> List[dict]:
+def _hash_entries(run_dir: Path, items: List, step: str) -> List[dict]:
+    """items 元素可以是相对 run_dir 的路径字符串，也可以是 {"path","abs"} 字典。
+
+    后者用于记录流水线外部的输入（如 extract 模式的 data/raw 原始表）。
+    """
     entries = []
-    for rel in rel_paths:
-        path = run_dir / rel
+    for item in items:
+        if isinstance(item, dict):
+            label = item["path"]
+            path = Path(item["abs"])
+        else:
+            label = item
+            path = run_dir / item
         if not path.is_file():
-            raise StepFailure(f"步骤 {step} 声明的文件不存在：{rel}")
+            raise StepFailure(f"步骤 {step} 声明的文件不存在：{label}")
         entries.append(
             {
-                "path": rel,
+                "path": label,
                 "sha256": hashing.sha256_file(path),
                 "bytes": path.stat().st_size,
             }
@@ -112,7 +121,8 @@ def run_pipeline(
 ) -> int:
     config_path = Path(config_path)
     cfg = load_config(config_path)
-    config_sha = hashing.sha256_text_normalized(config_path)
+    # 语义哈希：与行尾、缩进、注释无关，只与解析后的配置值有关
+    config_sha = hashing.sha256_json(cfg)
 
     rid = run_id or default_run_id(config_sha)
     run_dir = Path(runs_dir) / rid
@@ -179,11 +189,70 @@ def run_pipeline(
             handler.close()
             logger.removeHandler(handler)
 
-    hashing.write_canonical_json(run_dir / "manifest.json", manifest)
+    try:
+        manifest_path = hashing.write_canonical_json(run_dir / "manifest.json", manifest)
+        (run_dir / "manifest.sha256").write_text(
+            hashing.sha256_file(manifest_path) + "\n", encoding="utf-8", newline="\n"
+        )
+    except BaseException:
+        _purge_partial_report(run_dir)
+        print(
+            f"[cal] 流水线中止 | 失败步骤=manifest | 清单写入失败，已清理报告产物 | 日志目录={(run_dir / 'logs').as_posix()}",
+            file=sys.stderr,
+        )
+        return 2
+
     metrics_path = run_dir / "report" / "metrics.json"
     total_seconds = time.perf_counter() - pipeline_started
     print(
         f"[cal] 流水线完成 | run_id={rid} | metrics={metrics_path.as_posix()} "
         f"| sha256={hashing.sha256_file(metrics_path)} | 总耗时={total_seconds:.2f}s"
     )
+    return 0
+
+
+def verify_run(run_dir: str | Path) -> int:
+    """回验一次运行：重算清单自身与每个已登记文件的 SHA-256。
+
+    用法：cal verify --run-dir runs/<run_id>
+    返回 0 = 全部一致；1 = 有文件被篡改或缺失；2 = 运行目录/清单不存在。
+    """
+    run_dir = Path(run_dir)
+    manifest_path = run_dir / "manifest.json"
+    if not manifest_path.is_file():
+        print(f"[cal] 校验失败：找不到清单 {manifest_path}", file=sys.stderr)
+        return 2
+
+    ok = True
+    stamp_path = run_dir / "manifest.sha256"
+    if stamp_path.is_file():
+        recorded = stamp_path.read_text(encoding="utf-8").strip()
+        actual = hashing.sha256_file(manifest_path)
+        if recorded != actual:
+            print(f"[cal] 清单自身被改动：记录 {recorded[:16]}… 实际 {actual[:16]}…", file=sys.stderr)
+            ok = False
+
+    manifest = hashing.read_json(manifest_path)
+    checked = failed = 0
+    for entry in manifest.get("steps", []):
+        for kind in ("inputs", "outputs"):
+            for item in entry.get(kind, []):
+                label = item["path"]
+                candidate = run_dir / label
+                if not candidate.is_file():
+                    candidate = Path(label)
+                if not candidate.is_file():
+                    print(f"[cal] 缺失文件：{label}", file=sys.stderr)
+                    failed += 1
+                    continue
+                checked += 1
+                actual = hashing.sha256_file(candidate)
+                if actual != item["sha256"]:
+                    print(f"[cal] SHA-256 不匹配：{label}", file=sys.stderr)
+                    failed += 1
+
+    if failed:
+        print(f"[cal] 校验失败：{failed}/{checked + failed} 个文件不一致", file=sys.stderr)
+        return 1
+    print(f"[cal] 校验通过：{checked} 个文件 SHA-256 全部一致（含清单自校验）")
     return 0

@@ -11,10 +11,17 @@ def run(ctx) -> dict:
     out.mkdir(parents=True, exist_ok=True)
 
     source = ctx.cfg["data"]["source"]
+    inputs: list = []
     if source == "generate":
         companies, cards, outcomes = dataset.generate(ctx.cfg, ctx.seed)
     else:
         companies, cards, outcomes = dataset.extract(ctx.cfg, ctx.run_dir)
+        # 记录流水线外部输入的 SHA-256（extract 模式下真正决定结果的是这三张原始表）
+        raw_dir = dataset.resolve_raw_dir(ctx.cfg)
+        inputs = [
+            {"path": f"data/raw/{name}", "abs": (raw_dir / name).as_posix()}
+            for name in dataset.RAW_TABLES
+        ]
 
     files = []
     for name, rows in (
@@ -38,4 +45,4 @@ def run(ctx) -> dict:
         stats["candidate_pairs"],
         stats["positive_rate"],
     )
-    return {"inputs": [], "outputs": files}
+    return {"inputs": inputs, "outputs": files}

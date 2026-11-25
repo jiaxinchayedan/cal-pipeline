@@ -1,6 +1,7 @@
 """extract（脱敏抽取）模式：样例数据 + 端到端可用性 + 脱敏断言。"""
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -69,7 +70,32 @@ def test_extract_mode_completes_and_masks_contacts(tmp_path: Path) -> None:
 
     # 流水线照常产出报告
     assert (runs / "ex-1" / "report" / "metrics.json").is_file()
-    assert (runs / "ex-1" / "manifest.json").is_file()
+    manifest_path = runs / "ex-1" / "manifest.json"
+    assert manifest_path.is_file()
+
+    # extract 模式下 prepare 必须记录三张原始表的真实输入 SHA-256
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    prepare = manifest["steps"][0]
+    assert prepare["step"] == "prepare"
+    assert [item["path"] for item in prepare["inputs"]] == [
+        "data/raw/companies.jsonl",
+        "data/raw/demand_cards.jsonl",
+        "data/raw/outcomes.jsonl",
+    ]
+    for item in prepare["inputs"]:
+        assert len(item["sha256"]) == 64
+        assert item["bytes"] > 0
+
+    # 清单可回验
+    verified = subprocess.run(
+        [sys.executable, "-m", "cal", "verify", "--run-dir", str(runs / "ex-1")],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=300,
+    )
+    assert verified.returncode == 0, verified.stderr
 
 
 def test_extract_mode_reports_missing_raw_tables(tmp_path: Path) -> None:

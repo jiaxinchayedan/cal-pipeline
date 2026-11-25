@@ -35,6 +35,8 @@ RESOURCES = ["产线", "实验室", "仓储", "会议室", "展厅", "检测设�
 SCALES = [20, 50, 80, 120, 200, 350, 600, 900, 1500]
 CARD_SCALES = [30, 60, 100, 200, 400, 800, 1200]
 
+RAW_TABLES = ("companies.jsonl", "demand_cards.jsonl", "outcomes.jsonl")
+
 PHONE_RE = re.compile(r"1[3-9]\d{9}")
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 IDCARD_RE = re.compile(r"\b\d{17}[\dXx]\b")
@@ -132,13 +134,16 @@ def _mask_obj(obj):
     return _mask(obj)
 
 
+def resolve_raw_dir(cfg: dict) -> Path:
+    """把 data.raw_dir 解析为绝对路径（相对路径按当前工作目录解析）。"""
+    raw_dir = Path(cfg["data"]["raw_dir"])
+    return raw_dir if raw_dir.is_absolute() else Path.cwd() / raw_dir
+
+
 def extract(cfg: dict, run_dir: Path) -> Tuple[List[dict], List[dict], List[dict]]:
     """脱敏抽取：读取 data/raw 下的三家原始表，做字段级脱敏后归一为同一结构。"""
-    raw_dir = Path(cfg["data"]["raw_dir"])
-    if not raw_dir.is_absolute():
-        raw_dir = Path.cwd() / raw_dir
-    required = ("companies.jsonl", "demand_cards.jsonl", "outcomes.jsonl")
-    missing = [name for name in required if not (raw_dir / name).is_file()]
+    raw_dir = resolve_raw_dir(cfg)
+    missing = [name for name in RAW_TABLES if not (raw_dir / name).is_file()]
     if missing:
         raise FileNotFoundError(f"extract 模式缺少原始表：{missing}（目录 {raw_dir}）")
 
