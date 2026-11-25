@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+runs/
+out/
+.pytest_cache/
+determinism.txt
+run1.time
+run2.time
+run_*.log
+demo_fail.out
+demo_fail.err

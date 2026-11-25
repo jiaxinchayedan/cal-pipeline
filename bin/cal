@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+"""容器内的 `cal` 入口（等价于 python -m cal）。"""
+import sys
+
+from cal.cli import main
+
+if __name__ == "__main__":
+    sys.exit(main())

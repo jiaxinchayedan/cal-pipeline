@@ -1,0 +1,68 @@
+{
+  "ablation": {
+    "baseline_auc": 0.6676272866,
+    "deltas": {
+      "activity": 0.0145259679,
+      "industry_match": 0.0173832632,
+      "region_match": 0.0033150201,
+      "resource_overlap": 0.0621401196,
+      "size_fit": 0.0023927708
+    },
+    "importance_order": [
+      "resource_overlap",
+      "industry_match",
+      "activity",
+      "region_match",
+      "size_fit"
+    ]
+  },
+  "best_threshold": {
+    "f1": 0.5240692519,
+    "precision": 0.3976131995,
+    "recall": 0.7684726522,
+    "threshold": 0.5
+  },
+  "dataset": {
+    "candidate_pairs": 60000,
+    "companies": 300,
+    "demand_cards": 200,
+    "months": 24,
+    "positive_rate": 0.323,
+    "positives": 19380
+  },
+  "eval": {
+    "accuracy": 0.6428,
+    "auc": 0.6676272866,
+    "f1": 0.5042790396,
+    "fn": 8479,
+    "fp": 12953,
+    "negatives": 40620,
+    "positives": 19380,
+    "precision": 0.4569883458,
+    "recall": 0.5624871001,
+    "threshold": 0.6,
+    "tn": 27667,
+    "tp": 10901
+  },
+  "pipeline": {
+    "config_sha256": "1920e719ea83fff98e2eb905e8f8d302dbad2b02c254301cc600f093ad9afa58",
+    "seed": 20261125,
+    "steps": 8
+  },
+  "profile": {
+    "avg_resources": 2.56,
+    "latest_month_activity_mean": 0.4822524333
+  },
+  "schema_version": "1.0",
+  "search": {
+    "best_auc": 0.668101294,
+    "best_weights": {
+      "activity": 1.1,
+      "industry_match": 0.9,
+      "region_match": 0.5,
+      "resource_overlap": 1.5,
+      "size_fit": 0.7
+    },
+    "trials": 27
+  }
+}

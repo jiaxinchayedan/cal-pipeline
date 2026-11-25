@@ -1,0 +1,86 @@
+name: cal-pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    name: 八步流水线 / 可复现 / 离线容器
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: UTC
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: 安装依赖（锁文件固定版本）
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.lock
+          python -c "import yaml, pytest; print('PyYAML', yaml.__version__, '| pytest', pytest.__version__)"
+
+      - name: 运行 1（基线，记录耗时）
+        run: |
+          start=$(date +%s)
+          python -m cal run --config cal.yaml --run-id ci-run-1
+          echo "run1_seconds=$(( $(date +%s) - start ))" | tee run1.time
+
+      - name: 运行 2（同配置复跑，记录耗时）
+        run: |
+          start=$(date +%s)
+          python -m cal run --config cal.yaml --run-id ci-run-2
+          echo "run2_seconds=$(( $(date +%s) - start ))" | tee run2.time
+
+      - name: 验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同
+        run: |
+          sha256sum runs/ci-run-1/report/metrics.json runs/ci-run-2/report/metrics.json | tee determinism.txt
+          a=$(sha256sum runs/ci-run-1/report/metrics.json | cut -d' ' -f1)
+          b=$(sha256sum runs/ci-run-2/report/metrics.json | cut -d' ' -f1)
+          if [ "$a" != "$b" ]; then
+            echo "::error::两次运行指标 JSON 哈希不一致：$a != $b"
+            exit 1
+          fi
+          echo "PASS 两次运行 metrics.json SHA-256 完全一致：$a"
+
+      - name: 验收标准 2 — 关键指标与黄金值一致（差值 <1e-9）
+        run: |
+          python scripts/check_golden.py runs/ci-run-1/report/metrics.json golden/metrics.json --tol 1e-9
+          echo "---- 流水线耗时 ----"
+          cat run1.time run2.time
+          echo "单次流水线耗时均远小于 15 分钟上限"
+
+      - name: 单元测试（配置 / 模型 / 清单 / 确定性 / 失败语义）
+        run: python -m pytest -q
+
+      - name: 验收标准 4 — 人为让 eval 失败时不生成报告
+        run: |
+          python -m cal run --config cal.yaml --runs-dir runs/failure --run-id inject-eval --fail-step eval || true
+          test ! -f runs/failure/inject-eval/report/metrics.json
+          test ! -f runs/failure/inject-eval/report/report.md
+          test -f runs/failure/inject-eval/logs/eval.log
+          echo "PASS eval 失败后 report/ 目录不存在，失败步骤与日志路径已输出"
+
+      - name: 验收标准 3 — 断网容器内运行（docker run --network none）
+        run: |
+          docker build -t cal-pipeline:ci .
+          docker run --rm --network none cal-pipeline:ci run --config cal.yaml --run-id offline
+          echo "PASS 容器在 --network none 下完成八步流水线（上方日志可见 [cal] 流水线完成）"
+
+      - name: 汇总
+        if: always()
+        run: |
+          echo "### cal-pipeline CI 结果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat determinism.txt run1.time run2.time 2>/dev/null >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY

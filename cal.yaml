@@ -1,0 +1,50 @@
+# 校准流水线配置样例
+# 所有随机过程只由 seed 驱动；改任何一项都会改变产物，metrics.json 也会随之变化。
+
+seed: 20261125
+
+data:
+  source: generate        # generate = 生成虚构数据；extract = 从 data/raw 脱敏抽取
+  companies: 300
+  months: 24
+  demand_cards: 200
+  raw_dir: data/raw
+
+model:
+  weights:
+    industry_match: 0.90
+    region_match: 0.50
+    size_fit: 0.70
+    activity: 1.10
+    resource_overlap: 1.30
+  bias: -1.20
+
+replay:
+  top_k: 5
+
+eval:
+  threshold: 0.60   # 当前线上在用的阈值（待校准）
+
+scan_thresholds:
+  min: 0.05
+  max: 0.95
+  step: 0.05
+  metric: f1
+
+search:
+  grid:
+    industry_match: [0.70, 0.90, 1.10]
+    size_fit: [0.50, 0.70, 0.90]
+    resource_overlap: [1.10, 1.30, 1.50]
+
+ablation:
+  features:
+    - industry_match
+    - region_match
+    - size_fit
+    - activity
+    - resource_overlap
+
+runtime:
+  timezone: UTC
+  json_indent: 2
