@@ -9,3 +9,10 @@ run2.time
 run_*.log
 demo_fail.out
 demo_fail.err
+# 本地调查用的临时产物（CI 日志/接口响应）
+ci*.log
+ci*.zip
+ci*_errors.txt
+jobs*.json
+run.json
+repo.json
