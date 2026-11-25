@@ -98,23 +98,23 @@ docker run --rm --network none cal-pipeline:latest run --config cal.yaml --run-i
 ## 6. CI 证据（GitHub Actions 真实运行）
 
 - 仓库：<https://github.com/jiaxinchayedan/cal-pipeline>
-- 验证运行：**run #13**（commit `00901e3`）→ <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45622149241>
-- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **54 秒**（作业级硬上限 `timeout-minutes: 15`）
+- 代码提交 `ce715ca` 的验证运行：**run #16** → <https://github.com/jiaxinchayedan/cal-pipeline/actions/runs/45625116056>
+- 执行环境：`ubuntu-latest` / Python 3.11.18 / 作业总耗时 **79 秒**（作业级硬上限 `timeout-minutes: 15`）
 
 | 步骤 | 结论 | 耗时 |
 |---|---|---|
 | 记录作业开始时间 | ✅ | 0s |
-| 检出代码 | ✅ | 2s |
-| 安装 Python 3.11 | ✅ | 3s |
-| 安装依赖（锁文件固定版本） | ✅ | 3s |
-| 运行 1（基线，记录耗时） | ✅ | 6s |
-| 运行 2（同配置复跑，记录耗时） | ✅ | 5s |
+| 检出代码 | ✅ | 1s |
+| 安装 Python 3.11 | ✅ | 4s |
+| 安装依赖（锁文件固定版本） | ✅ | 4s |
+| 运行 1（基线，记录耗时） | ✅ | 7s |
+| 运行 2（同配置复跑，记录耗时） | ✅ | 7s |
 | 验收标准 1 — 两次运行 metrics.json 的 SHA-256 相同 | ✅ | 0s |
 | 验收标准 2 — 黄金值一致（差值 <1e-9）且单次流水线 ≤15 分钟 | ✅ | 0s |
-| 单元测试（22 个） | ✅ | 21s |
+| 单元测试（22 个） | ✅ | 32s |
 | 清单回验 — `cal verify` 重算全部文件 SHA-256 | ✅ | 0s |
 | 验收标准 4 — 人为让 eval 失败时不生成报告 | ✅ | 1s |
-| 验收标准 3 — 断网容器内运行（`docker run --network none`） | ✅ | 13s |
+| 验收标准 3 — 断网容器内运行（`docker run --network none`） | ✅ | 19s |
 | 整作业耗时断言（≤15 分钟） | ✅ | 0s |
 | 汇总 | ✅ | 0s |
 
@@ -126,21 +126,34 @@ CI 日志原文摘录（可在上面的 run 链接里逐行核对）：
 PASS 两次运行 metrics.json SHA-256 完全一致：0429639483244a88a465ee0b0fa9bb4ee397b97504df75d7201d18f1e0b3ddf0
 比对数值叶子 39 个，最大差值 0.000e+00（容差 1e-09）
 PASS 完整流水线耗时均 ≤15 分钟，关键指标与黄金值一致
-22 passed in 21.38s
+22 passed in 31.00s
 [cal] 校验通过：35 个文件 SHA-256 全部一致（含清单自校验）
 PASS 退出码=2、失败步骤与日志路径已输出、report/ 目录不存在
-[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=0429639483244a88... | 总耗时=4.83s
+[cal] 流水线完成 | run_id=offline | metrics=runs/offline/report/metrics.json | sha256=0429639483244a88... | 总耗时=7.06s
 PASS 容器在 --network none 下完成八步流水线
-整作业耗时 54s（含检出、测试、镜像构建）
-PASS 整作业耗时 54s ≤ 900s
+整作业耗时 75s（含检出、测试、镜像构建）
+PASS 整作业耗时 75s ≤ 900s
 ```
 
-截图（均取自 run #13，非拼接）：
+截图（均取自 run #16，非拼接）：
 
 | 截图 | 内容 |
 |---|---|
 | `docs/ci-steps.png` | 14 个步骤全部绿色通过，含各步耗时与作业总时长 |
 | `docs/ci-summary.png` | 两次运行 SHA-256 相同、`cal verify` 35 个文件通过、断网容器 `run_id=offline` 完成日志 |
+
+> 说明：本节的数字与截图绑定 run #16（代码提交 `ce715ca`）。之后若只改文档，会触发同一工作流的再验证（如 #17），
+> 结果可在 Actions 页面按 run 编号逐条核对，不存在「截图取一次、数字取另一次」的拼接。
+
+### 6.1 审查与修复记录（真实失败留痕）
+
+| 现象 | 原因 | 处理 |
+|---|---|---|
+| run #1 红：黄金值比对失败 | 本地 cal.yaml 为 CRLF、CI 检出为 LF，配置哈希不同 | 改为语义哈希 + 回归测试 |
+| run #2 红：容器内 `ModuleNotFoundError: cal` | 入口脚本在 `/usr/local/bin`，拿不到 `/app` 的包 | Dockerfile 增加 `PYTHONPATH=/app` |
+| run #11 红：整作业耗时断言找不到开始时间 | `actions/checkout` 清理了工作区里的临时文件 | 开始时间改写 `RUNNER_TEMP` |
+
+这些失败运行都保留在 Actions 历史里，可作为「断言确实会红」的旁证。
 
 ## 7. 测试结果（本机真实输出）
 
@@ -222,4 +235,4 @@ python -m cal run --config cal.yaml   # cal.yaml 中 data.source 改成 extract
 - **`extract` 模式**需自备 `data/raw` 三家原始表，脱敏仅覆盖手机号、邮箱、身份证号三类模式，真实业务字段脱敏策略需按客户规范扩展。
 - **数据为虚构**：行业、区域、企业、需求卡均由种子生成，不对应任何真实主体。
 - **黄金值的来源**：`golden/metrics.json` 由基线版本首次运行产出，经人工核对后作为「合约」入库。它保证的是「算法与数据不再漂移」，不是「模型效果最优」。任何算法或种子变更都必须同步更新黄金值并在提交说明里写清原因，否则 CI 会红。
-- **CI 证据的时效性**：本文所有 CI 数字与截图均取自同一次运行（run #13 / commit `00901e3`）；后续仅文档变更的提交会触发同样的验证，历史运行记录可在 Actions 页面逐条核对。
+- **CI 证据的时效性**：本文所有 CI 数字与截图均绑定同一次运行（run #16 / 代码提交 `ce715ca`）；后续文档变更会触发同样的验证，可在 Actions 页面按 run 编号核对。
