@@ -19,7 +19,8 @@ jobs:
       - name: 记录作业开始时间
         run: |
           set -euo pipefail
-          date +%s | tee job_start.txt
+          # 写到 RUNNER_TEMP：checkout 会清理工作区
+          date +%s | tee "${RUNNER_TEMP}/job_start.txt"
 
       - name: 检出代码
         uses: actions/checkout@v4
@@ -116,7 +117,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          elapsed=$(( $(date +%s) - $(cat job_start.txt) ))
+          elapsed=$(( $(date +%s) - $(cat "${RUNNER_TEMP}/job_start.txt") ))
           echo "整作业耗时 ${elapsed}s（含检出、测试、镜像构建）"
           test "$elapsed" -le 900
           echo "PASS 整作业耗时 ${elapsed}s ≤ 900s"
