@@ -16,3 +16,12 @@ ci*_errors.txt
 jobs*.json
 run.json
 repo.json
+
+# 本地调查中间产物
+*.tmp.txt
+ci*_key_lines.txt
+ci_step_table.txt
+ev.txt
+jobs*.json
+ci*.zip
+ci*.log
